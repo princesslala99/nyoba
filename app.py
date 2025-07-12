@@ -53,4 +53,46 @@ def calculation_rsd_rpd_page():
     arr = np.array(data)
     mean = np.mean(arr)
     std = np.std(arr, ddof=1)
-    rsd =
+    rsd = (std / mean) * 100 if mean != 0 else 0
+
+    st.write(f"*Mean:* {mean:.3f}")
+    st.write(f"*Std Dev:* {std:.3f}")
+    st.write(f"%RSD:** {rsd:.2f}%")
+
+    if len(arr) == 2:
+        rpd = (abs(arr[0] - arr[1]) / ((arr[0] + arr[1]) / 2)) * 100
+        st.write(f"%RPD:** {rpd:.2f}%")
+    else:
+        st.info("Masukkan tepat dua data untuk menghitung %RPD.")
+
+# Fungsi halaman perhitungan %Recovery
+def calculation_recovery_page():
+    st.header("Perhitungan %Recovery")
+
+    hasil = st.number_input("Hasil pengujian (hasil ditemukan)", value=0.0)
+    spike = st.number_input("Nilai spike (nilai yang ditambahkan)", value=0.0)
+
+    if spike != 0:
+        recovery = (hasil / spike) * 100
+        st.write(f"%Recovery:** {recovery:.2f}%")
+    else:
+        st.info("Masukkan nilai spike lebih dari 0.")
+
+# --- Main aplikasi ---
+
+st.set_page_config(page_title="Kalkulator Kimia", page_icon="⚗", layout="centered")
+
+# Sidebar menu
+st.sidebar.title("Menu Navigasi")
+menu = st.sidebar.radio("Pilih Halaman:", 
+                        ["Cover", "Input Data", "Perhitungan %RSD & %RPD", "Perhitungan %Recovery"])
+
+# Routing halaman berdasarkan pilihan menu
+if menu == "Cover":
+    cover_page()
+elif menu == "Input Data":
+    input_data_page()
+elif menu == "Perhitungan %RSD & %RPD":
+    calculation_rsd_rpd_page()
+elif menu == "Perhitungan %Recovery":
+    calculation_recovery_page()
