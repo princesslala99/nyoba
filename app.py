@@ -1,21 +1,28 @@
 import streamlit as st
-import numpy as np
 import pandas as pd
+import numpy as np
 
-st.title("Kalkulator Kimia Bertahap dengan Input Data Tabel")
+# Fungsi halaman cover
+def cover_page():
+    st.title("Selamat Datang di Aplikasi Kalkulator Kimia")
+    st.markdown("""
+    ### Aplikasi ini dapat menghitung:
+    - %RSD (Relative Standard Deviation)
+    - %RPD (Relative Percent Difference)
+    - %Recovery
+    
+    Gunakan menu di sidebar untuk navigasi ke fitur yang diinginkan.
+    """)
+    st.image("https://images.unsplash.com/photo-1581093588401-9c0e7e0e8d5b?auto=format&fit=crop&w=800&q=60",
+             caption="Ilustrasi Kimia", use_column_width=True)
 
-tab1, tab2, tab3 = st.tabs(["1. Input Data", "2. Perhitungan %RSD & %RPD", "3. Perhitungan %Recovery"])
-
-with tab1:
+# Fungsi halaman input data dalam bentuk tabel
+def input_data_page():
     st.header("Input Data dalam Bentuk Tabel")
 
-    # Inisialisasi dataframe kosong dengan 5 baris default
     if 'data_df' not in st.session_state:
-        st.session_state['data_df'] = pd.DataFrame({
-            'Data': [np.nan]*5
-        })
+        st.session_state['data_df'] = pd.DataFrame({'Data': [np.nan]*5})
 
-    # Editable data editor
     edited_df = st.data_editor(
         st.session_state['data_df'],
         num_rows="dynamic",
@@ -23,49 +30,27 @@ with tab1:
         key='data_editor'
     )
 
-    # Simpan dataframe yang diedit ke session_state
     st.session_state['data_df'] = edited_df
 
-    # Tampilkan data yang valid (non-null dan numeric)
     data = edited_df['Data'].dropna().tolist()
     if len(data) > 0:
         st.success(f"Data berhasil dimasukkan: {data}")
     else:
         st.info("Masukkan data minimal satu nilai.")
 
-with tab2:
+# Fungsi halaman perhitungan %RSD dan %RPD
+def calculation_rsd_rpd_page():
     st.header("Perhitungan %RSD & %RPD")
-    data = st.session_state.get('data_df', pd.DataFrame()).dropna().squeeze()
-    if isinstance(data, pd.Series):
-        data_list = data.tolist()
-    elif isinstance(data, list):
-        data_list = data
-    else:
-        data_list = []
+    if 'data_df' not in st.session_state:
+        st.info("Silakan masukkan data terlebih dahulu pada menu 'Input Data'.")
+        return
 
-    if len(data_list) > 0:
-        arr = np.array(data_list)
-        mean = np.mean(arr)
-        std = np.std(arr, ddof=1)
-        rsd = (std / mean) * 100 if mean != 0 else 0
-        st.write(f"*Mean:* {mean:.3f}")
-        st.write(f"*Std Dev:* {std:.3f}")
-        st.write(f"%RSD:** {rsd:.2f}%")
+    data = st.session_state['data_df']['Data'].dropna().tolist()
+    if len(data) == 0:
+        st.info("Data kosong, silakan masukkan data pada menu 'Input Data'.")
+        return
 
-        if len(arr) == 2:
-            rpd = (abs(arr[0] - arr[1]) / ((arr[0] + arr[1]) / 2)) * 100
-            st.write(f"%RPD:** {rpd:.2f}%")
-        else:
-            st.info("Masukkan tepat dua data untuk menghitung %RPD.")
-    else:
-        st.info("Masukkan data terlebih dahulu di tab 'Input Data'.")
-
-with tab3:
-    st.header("Perhitungan %Recovery")
-    hasil = st.number_input("Hasil pengujian (hasil ditemukan)", value=0.0)
-    spike = st.number_input("Nilai spike (nilai yang ditambahkan)", value=0.0)
-    if spike != 0:
-        recovery = (hasil / spike) * 100
-        st.write(f"%Recovery:** {recovery:.2f}%")
-    else:
-        st.info("Masukkan nilai spike lebih dari 0.")
+    arr = np.array(data)
+    mean = np.mean(arr)
+    std = np.std(arr, ddof=1)
+    rsd =
