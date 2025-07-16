@@ -1,193 +1,183 @@
+/app.py             # Beranda (opsional, bisa kosong atau info umum)
+/pages/Regresi.py   # Halaman untuk input dan hitung regresi
+/pages/Konsentrasi.py  # Halaman untuk hitung konsentrasi dari absorbansi
+/pages/Akurasi.py      # Halaman evaluasi akurasi (%Recovery)
+
 import streamlit as st
-import pandas as pd
+
+st.set_page_config(
+    page_title="🧪 Aplikasi Analisis Regresi & Evaluasi",
+    layout="wide",
+    initial_sidebar_state="expanded",
+)
+
+st.title("🧪 Aplikasi Analisis Regresi dan Evaluasi Kinerja Metode")
+st.markdown("""
+Selamat datang di aplikasi analisis data spektrofotometri.
+
+Gunakan sidebar untuk memilih menu:
+
+- Regresi
+- Hitung Konsentrasi
+- Evaluasi Akurasi
+""")
+import streamlit as st
 import numpy as np
-import matplotlib.pyplot as plt
-from sklearn.linear_model import LinearRegression
+import pandas as pd
 
-st.set_page_config(page_title="Aplikasi Analisis Spektrofotometri", layout="centered")
-
-def cover():
-    st.title("Aplikasi Analisis Spektrofotometri")
-    st.markdown("""
-    Aplikasi ini membantu menghitung:
-    - Kurva kalibrasi dari data deret standar absorbansi dan konsentrasi
-    - Konsentrasi sampel berdasarkan kurva kalibrasi
-    - Presisi (%RSD, %RPD) dari pengukuran konsentrasi
-    - Akurasi (%Recovery) berdasarkan data spiking
-    
-    Ikuti menu di sidebar untuk proses bertahap.
-    """)
-
-def input_standards():
-    st.header("1. Input Data Standar")
-    st.markdown("Masukkan data konsentrasi (ppm) dan absorbansi deret standar.")
-
-    if 'standar_df' not in st.session_state:
-        df = pd.DataFrame({
-            'Konsentrasi (ppm)': [0, 1, 2, 3, 4],
-            'Absorbansi': [0.0, 0.1, 0.2, 0.3, 0.4]
-        })
-        st.session_state['standar_df'] = df
-    else:
-        df = st.session_state['standar_df']
-
-    data = st.data_editor(df, num_rows="dynamic", key='standar_editor', use_container_width=True)
-    st.session_state['standar_df'] = data
-
-def plot_kalibrasi(data):
-    # Buang row dengan data kosong
-    data = data.dropna()
-
-    X = data['Konsentrasi (ppm)'].values.reshape(-1,1)
-    y = data['Absorbansi'].values
-
-    model = LinearRegression()
-    model.fit(X, y)
-    y_pred = model.predict(X)
-    r2 = model.score(X, y)
-
-    fig, ax = plt.subplots()
-    ax.scatter(X, y, color='blue', label='Data Standar')
-    ax.plot(X, y_pred, color='red', label='Kalibrasi Linear')
-    ax.set_xlabel('Konsentrasi (ppm)')
-    ax.set_ylabel('Absorbansi')
-    ax.set_title(f'Kurva Kalibrasi (R² = {r2:.4f})')
-    ax.legend()
-    st.pyplot(fig)
-
-    intercept = model.intercept_
-    slope = model.coef_[0]
-    return intercept, slope, r2
-
-def hitung_konsentrasi(abs_sample, intercept, slope):
-    if slope == 0:
-        return 0
-    return (abs_sample - intercept) / slope
-
-def input_sample():
-    st.header("2. Input Data Sampel")
-    abs_sample = st.number_input("Masukkan absorbansi sampel", min_value=0.0, step=0.001, format="%.4f")
-    return abs_sample
-
-def input_precision_data():
-    st.header("3. Input Data Presisi (Konsentrasi dari pengukuran berulang)")
-    st.markdown("Masukkan data pengukuran konsentrasi sampel berulang untuk menghitung %RSD dan %RPD")
-    if 'precision_df' not in st.session_state:
-        df = pd.DataFrame({'Konsentrasi (ppm)': [np.nan, np.nan]})
-        st.session_state['precision_df'] = df
-    else:
-        df = st.session_state['precision_df']
-    data = st.data_editor(df, num_rows="dynamic", key="precision_editor", use_container_width=True)
-    st.session_state['precision_df'] = data
-    return data['Konsentrasi (ppm)'].dropna().tolist()
-
-def input_recovery_data():
-    st.header("4. Input Data Akurasi (%Recovery)")
-    hasil = st.number_input("Hasil pengujian dengan spike", min_value=0.0, step=0.001, format="%.4f")
-    hasil_asli = st.number_input("Hasil pengujian tanpa spike", min_value=0.0, step=0.001, format="%.4f")
-    spike = st.number_input("Konsentrasi spike yang ditambahkan", min_value=0.0, step=0.001, format="%.4f")
-    return hasil, hasil_asli, spike
-
-def hitung_rsd(data):
-    data = np.array(data)
-    mean = np.mean(data)
-    std = np.std(data, ddof=1)
-    rsd = (std / mean) * 100 if mean != 0 else 0
-    return mean, std, rsd
-
-def hitung_rpd(data):
-    if len(data) != 2:
+def parse_numbers(text):
+    try:
+        return np.array([float(x.strip()) for x in text.split(",") if x.strip() != ""])
+    except:
         return None
-    rpd = abs(data[0] - data[1]) / ((data[0] + data[1]) / 2) * 100
-    return rpd
 
-def hitung_recovery(hasil_spike, hasil_asli, spike):
-    if spike == 0:
-        return None
-    recovery = ((hasil_spike - hasil_asli) / spike) * 100
-    return recovery
+def linear_regression(x, y):
+    n = len(x)
+    sum_x, sum_y = np.sum(x), np.sum(y)
+    sum_xx, sum_xy = np.sum(x**2), np.sum(x*y)
+    denom = n * sum_xx - sum_x**2
+    if denom == 0:
+        return None, None, None
+    slope = (n * sum_xy - sum_x * sum_y) / denom
+    intercept = (sum_y - slope * sum_x) / n
+    y_pred = slope * x + intercept
+    ss_tot = np.sum((y - np.mean(y))**2)
+    ss_res = np.sum((y - y_pred)**2)
+    r2 = 1 - ss_res / ss_tot if ss_tot != 0 else 1.0
+    return slope, intercept, r2
 
-def tampilkan_kesimpulan_rsd(rsd):
-    st.subheader("Kesimpulan Presisi (%RSD)")
-    batas_rsd = 5  # contoh batas RSD maksimal 5%
-    if rsd <= batas_rsd:
-        st.success(f"%RSD = {rsd:.2f}% → Memenuhi syarat (≤ {batas_rsd}%)")
+st.header("🔢 Input Data Standar dan Hitung Regresi")
+
+conc_str = st.text_area("📏 Konsentrasi (ppm)", "0, 1, 2, 3, 4, 5")
+abs_str = st.text_area("📊 Absorbansi", "0.005, 0.105, 0.205, 0.305, 0.405, 0.505")
+
+if st.button("⚗ Hitung dan Tampilkan Regresi"):
+    x = parse_numbers(conc_str)
+    y = parse_numbers(abs_str)
+
+    if x is None or y is None:
+        st.error("Format data salah, hanya angka dipisah koma yang diperbolehkan.")
+    elif len(x) < 2 or len(y) < 2:
+        st.error("Minimal input 2 data.")
+    elif len(x) != len(y):
+        st.error(f"Jumlah data tidak sama: {len(x)} vs {len(y)}")
     else:
-        st.error(f"%RSD = {rsd:.2f}% → Tidak memenuhi syarat (≤ {batas_rsd}%)")
-
-def tampilkan_kesimpulan_rpd(rpd):
-    st.subheader("Kesimpulan Presisi (%RPD)")
-    if rpd is None:
-        st.info("Masukkan tepat 2 data pengukuran untuk hitung %RPD")
-        return
-    batas_rpd = 10  # contoh batas RPD maksimal 10%
-    if rpd <= batas_rpd:
-        st.success(f"%RPD = {rpd:.2f}% → Memenuhi syarat (≤ {batas_rpd}%)")
-    else:
-        st.error(f"%RPD = {rpd:.2f}% → Tidak memenuhi syarat (≤ {batas_rpd}%)")
-
-def tampilkan_kesimpulan_recovery(recovery):
-    st.subheader("Kesimpulan Akurasi (%Recovery)")
-    if recovery is None:
-        st.info("Masukkan data spike yang valid")
-        return
-    batas_min, batas_max = 85, 115
-    if batas_min <= recovery <= batas_max:
-        st.success(f"%Recovery = {recovery:.2f}% → Memenuhi syarat ({batas_min}% - {batas_max}%)")
-    else:
-        st.error(f"%Recovery = {recovery:.2f}% → Tidak memenuhi syarat ({batas_min}% - {batas_max}%)")
-
-# --- Main Program ---
-
-st.sidebar.title("Menu Proses")
-menu = st.sidebar.radio("Pilih Tahap:", [
-    "Cover",
-    "Input Data Standar",
-    "Kurva Kalibrasi dan Hitung Konsentrasi Sampel",
-    "Presisi (%RSD dan %RPD)",
-    "Akurasi (%Recovery)"
-])
-
-if menu == "Cover":
-    cover()
-
-elif menu == "Input Data Standar":
-    input_standards()
-
-elif menu == "Kurva Kalibrasi dan Hitung Konsentrasi Sampel":
-    if 'standar_df' not in st.session_state:
-        st.warning("Masukkan data standar terlebih dahulu di menu 'Input Data Standar'.")
-    else:
-        df_standar = st.session_state['standar_df'].dropna()
-        if len(df_standar) < 2:
-            st.warning("Input minimal 2 data standar valid untuk kalibrasi.")
+        slope, intercept, r2 = linear_regression(x, y)
+        if None in [slope, intercept, r2]:
+            st.error("Gagal menghitung regresi, periksa data Anda.")
         else:
-            intercept, slope, r2 = plot_kalibrasi(df_standar)
-            st.markdown(f"Persamaan Kalibrasi: Absorbansi = {slope:.4f} × Konsentrasi + {intercept:.4f}")
-            abs_sample = input_sample()
-            if abs_sample >= 0:
-                konsentrasi_sampel = hitung_konsentrasi(abs_sample, intercept, slope)
-                st.write(f"*Konsentrasi sampel diperkirakan: {konsentrasi_sampel:.4f} ppm*")
-                st.session_state['konsentrasi_sampel'] = konsentrasi_sampel
+            st.session_state.slope = slope
+            st.session_state.intercept = intercept
+            st.session_state.r2 = r2
+            st.session_state.reg_ready = True
 
-elif menu == "Presisi (%RSD dan %RPD)":
-    konsentrasi_list = input_precision_data()
-    if len(konsentrasi_list) < 2:
-        st.info("Masukkan minimal 2 data pengukuran untuk presisi.")
+            st.success(f"Persamaan regresi: y = {slope:.4f} x + {intercept:.4f}")
+            st.caption(f"Koefisien Determinasi (R²): {r2:.4f}")
+
+            # Grafik
+            import matplotlib.pyplot as plt
+            fig, ax = plt.subplots()
+            ax.scatter(x, y, label="Data Standar", color="blue")
+            x_line = np.linspace(min(x), max(x), 100)
+            y_line = slope * x_line + intercept
+            ax.plot(x_line, y_line, color="red", label="Garis Regresi")
+            ax.set_xlabel("Konsentrasi (ppm)")
+            ax.set_ylabel("Absorbansi")
+            ax.legend()
+            st.pyplot(fig)
+else:
+    if st.session_state.get("reg_ready", False):
+        st.info("Regresi sudah pernah dihitung. Pergi ke menu lain untuk gunakan nilai regresi.")
     else:
-        mean, std, rsd = hitung_rsd(konsentrasi_list)
-        rpd = hitung_rpd(konsentrasi_list)
-        st.write(f"Mean Konsentrasi: {mean:.4f} ppm")
-        st.write(f"Std Dev: {std:.4f}")
-        st.write(f"%RSD: {rsd:.2f}%")
-        if rpd is not None:
-            st.write(f"%RPD: {rpd:.2f}%")
-        tampilkan_kesimpulan_rsd(rsd)
-        tampilkan_kesimpulan_rpd(rpd)
+        st.info("Masukkan data dan tekan tombol di atas untuk menghitung regresi.")
+import streamlit as st
+import numpy as np
+import pandas as pd
 
-elif menu == "Akurasi (%Recovery)":
-    hasil_spike, hasil_asli, spike = input_recovery_data()
-    recovery = hitung_recovery(hasil_spike, hasil_asli, spike)
-    if recovery is not None:
-        st.write(f"%Recovery: {recovery:.2f}%")
-    tampilkan_kesimpulan_recovery(recovery)
+st.header("🧪 Hitung Konsentrasi dari Absorbansi Sampel")
+
+if not st.session_state.get("reg_ready", False):
+    st.warning("Harap lakukan regresi dahulu di menu Regresi.")
+else:
+    slope = st.session_state.slope
+    intercept = st.session_state.intercept
+
+    abs_str = st.text_area("Masukkan Absorbansi Sampel (dipisah koma)", "0.250, 0.255, 0.248")
+
+    def parse_numbers(text):
+        try:
+            return np.array([float(x.strip()) for x in text.split(",") if x.strip() != ""])
+        except:
+            return None
+
+    if st.button("Hitung Konsentrasi"):
+        ys = parse_numbers(abs_str)
+        if ys is None or len(ys) == 0:
+            st.error("Format input absorbansi salah.")
+        else:
+            try:
+                c_terukur = (ys - intercept) / slope
+            except Exception as e:
+                st.error(f"Error menghitung konsentrasi: {e}")
+                c_terukur = np.array([])
+
+            if len(c_terukur):
+                df = pd.DataFrame({
+                    "Absorbansi": ys,
+                    "C-terukur (ppm)": c_terukur
+                })
+                st.dataframe(df.style.format({"Absorbansi": "{:.4f}", "C-terukur (ppm)": "{:.4f}"}), use_container_width=True)
+
+                mean_val = np.mean(c_terukur)
+                std_dev = np.std(c_terukur, ddof=0)
+                st.success(f"Rata-rata konsentrasi: {mean_val:.4f} ppm, Std Deviasi: {std_dev:.4f}")
+
+                # Hitung presisi (%RSD)
+                rsd = (std_dev / mean_val) * 100 if mean_val != 0 else 0
+                def classify_rsd(val):
+                    if val <= 2:
+                        return "🌟 Presisi Luar Biasa!"
+                    elif val <= 5:
+                        return "🟢 Presisi Sangat Baik!"
+                    elif val <= 10:
+                        return "🟡 Presisi Cukup Baik"
+                    else:
+                        return "🔴 Presisi Perlu Diperbaiki"
+                st.info(f"Presisi (%RSD): {rsd:.2f}% — {classify_rsd(rsd)}")
+import streamlit as st
+
+st.header("✅ Evaluasi Akurasi (%Recovery)")
+
+def to_float(x):
+    try:
+        return float(x)
+    except:
+        return None
+
+c_spike_measured = st.text_input("🧪 C-spike terukur (ppm)", "0")
+c_spike_added = st.text_input("➕ C-spike ditambahkan (ppm)", "0")
+c_sample_initial = st.text_input("🔬 C-sampel awal (ppm)", "0")
+
+if st.button("Hitung %Recovery"):
+    measured = to_float(c_spike_measured)
+    added = to_float(c_spike_added)
+    initial = to_float(c_sample_initial)
+
+    if None in [measured, added, initial]:
+        st.error("Semua input harus angka valid.")
+    elif added == 0:
+        st.error("C-spike ditambahkan harus > 0.")
+    else:
+        recovery = ((measured - initial) / added) * 100
+
+        if 95 <= recovery <= 105:
+            status = "🌟 Akurasi Sempurna!"
+        elif 90 <= recovery <= 110:
+            status = "🟢 Akurasi Sangat Baik!"
+        elif 80 <= recovery <= 120:
+            status = "🟡 Akurasi Cukup Baik"
+        else:
+            status = "🔴 Akurasi Perlu Diperbaiki"
+
+        st.success(f"%Recovery = {recovery:.2f}% — {status}")
+        st.caption("Formula: ((C-spike terukur - C-sampel awal) / C-spike ditambahkan) × 100%")
