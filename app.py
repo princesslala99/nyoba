@@ -31,6 +31,8 @@ st.markdown(
     /* Atur judul utama dan elemen sejenis supaya tanpa background */
     h1, .custom-title {
         background-color: transparent !important;
+        padding: 0 !important;
+        margin: 0 !important;
         color: white !important; /* Agar judul tetap kontras */
     }
 
@@ -64,17 +66,7 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
-st.markdown(
-    """
-    <div class="app-footer">
-        ---
-        Web App by Kelompok 10 Kelas 1A<br>
-        Analisis Kimia<br>
-        Politeknik AKA Bogor
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
+
 
 # --- COVER & SIDEBAR MENU ---
 st.set_page_config(
