@@ -3,15 +3,53 @@ import numpy as np
 import pandas as pd
 import base64
 import time
+def add_bg_from_local(image_file):
+    with open(image_file, "rb") as f:
+        data = f.read()
+        encoded = base64.b64encode(data).decode()
+    st.markdown(
+        f"""
+         <style>
+         .stApp {{
+             background-image: url("data:image/jpg;base64,{encoded}");
+             background-size: cover;
+             background-attachment: fixed;
+             background-position: center;
+         }}
+
+         /* Black box hanya untuk blok utama yang penting di konten utama */
+         [data-testid="stMarkdownContainer"], .stAlert, .stHeader, .stSubheader, .stTitle,
+         .stSuccess, .stInfo, .stWarning, .stError, .stCaption {{
+             background-color: rgba(0,0,0,0.6) !important;
+             border-radius: 12px;
+             padding: 1.2rem !important;
+             color: white !important;
+             margin-bottom: 1rem;
+         }}
+
+         /* Sidebar tanpa black box, default transparan dan style bawaan */
+         section[data-testid="stSidebar"] .block-container {{
+             background-color: transparent !important;
+             color: inherit !important;
+             padding: 0 !important;
+             border-radius: 0 !important;
+             box-shadow: none !important;
+         }}
+
+         /* Hilangkan shadow di dataframe agar tampil konsisten */
+         .css-1d391kg, .css-1n76uvr, .css-1cpxqw2, .stDataFrame, .esravye2  {{
+             box-shadow: none !important;
+         }}
+         </style>
+         """,
+        unsafe_allow_html=True
+    )
+
+# Panggil fungsi background, ganti path sesuai file Anda
+add_bg_from_local("images/background_avif.jpg")
 
 st.markdown("""
 <style>
-/* Sidebar container */
-[data-testid="stSidebar"] {
-    background: linear-gradient(145deg, #1e293b, #0f172a);
-    color: white;
-}
-
 /* Container radio */
 div[data-baseweb="radio"] {
     display: flex;
