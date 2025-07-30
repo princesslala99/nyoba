@@ -48,6 +48,20 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
+# ========== APP CONTENT ========== #
+
+st.title("📊 Analisis Statistik Interaktif")
+
+st.subheader("Upload Dataset CSV kamu")
+uploaded_file = st.file_uploader("Pilih file CSV", type="csv")
+
+if uploaded_file:
+    df = pd.read_csv(uploaded_file)
+    st.success("✅ File berhasil diunggah!")
+
+    st.subheader("📄 Preview Data")
+    st.dataframe(df.head())
+
     # Kolom numerik untuk analisis
     numeric_cols = df.select_dtypes(include=['int', 'float']).columns.tolist()
 
