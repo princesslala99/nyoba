@@ -45,7 +45,7 @@ st.set_page_config(
 with st.container():
     st.markdown(
         """
-        <div style='width:100%;text-align:center; margin-bottom:1rem;'>
+        <div class="black-box" style='width:100%;text-align:center; margin-bottom:1rem;'>
         <span style='font-size:3rem;'>🧪</span>
         </div>
         <h1 style='text-align:center;'>Website Kalkulator Analisis Presisi & Akurasi</h1>
