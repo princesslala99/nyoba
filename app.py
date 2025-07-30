@@ -262,6 +262,17 @@ elif menu == "🧮 Hitung Konsentrasi & Presisi":
                     st.info(f"{emoji} {prec_typ}: {prec_val:.2f}% — {status}")
                 else:
                     st.info("Isi minimal 2 data konsentrasi untuk hitung presisi.")
+                if prec_val is not None:
+                    emoji, status = info_precision(prec_val, prec_typ)
+                    st.info(f"{emoji} {prec_typ}: {prec_val:.2f}% — {status}")
+                # Validasi syarat keberterimaan < 10%
+        if prec_val < 10:
+            st.success(f"✅ {prec_typ} berada di bawah 10% — Hasil diterima")
+        else:
+            st.error(f"❌ {prec_typ} ≥ 10% — Hasil tidak diterima")
+        else:
+            st.info("Isi minimal 2 data konsentrasi untuk hitung presisi.")
+
 
 # --- MENU: EVALUASI AKURASI (%RECOVERY) ---
 elif menu == "✅ Evaluasi Akurasi":
@@ -292,7 +303,12 @@ elif menu == "✅ Evaluasi Akurasi":
             recovery = ((val_measured - val_awal) / val_added) * 100
             emoji, status = info_akurasi(recovery)
             st.success(f"{emoji} %Recovery = {recovery:.2f}%")
-            st.caption(f"Status Akurasi: {status}  \nFormula: ((C-spike terukur - C-awal) / C-ditambahkan) × 100%")
+            # Validasi syarat keberterimaan recovery antara 80-120%
+if 80 <= recovery <= 120:
+    st.success("✅ %Recovery berada dalam rentang 80-120% — Hasil diterima")
+else:
+    st.error("❌ %Recovery di luar rentang 80-120% — Hasil tidak diterima")
+    st.caption(f"Status Akurasi: {status}  \nFormula: ((C-spike terukur - C-awal) / C-ditambahkan) × 100%")
 
 st.markdown(
     """
