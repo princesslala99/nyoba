@@ -24,15 +24,34 @@ def add_bg_from_local(image_file):
 add_bg_from_local("images/background_avif.jpg")
 st.markdown(
     """
-    <div style="background-color: rgba(255, 255, 255, 0.85); padding: 1rem; border-radius: 10px;">
-        <h1 style="text-align:center;">Website Kalkulator Analisis Presisi & Akurasi</h1>
-        <p style="text-align:center; max-width:600px; margin:auto;">
-            <em>Lab Digital Pintar Spektrofotometri – Streamlit Edition</em><br>
-            Hitung regresi linier, presisi (%RPD/%RSD), dan akurasi (%Recovery) dengan mudah, berbasis input absorbansi dan konsentrasi.
-        </p>
-    </div>
+    <style>
+    /* Terapkan background putih transparan pada hampir semua teks dan container utama */
+    .css-18e3th9, /* Konten utama container */
+    .css-1d391kg, /* Kadang container lain untuk input dan teks */
+    .stMarkdown, 
+    .stText, 
+    .stText > div,
+    .stRadio, /* Radio buttons label */
+    .stButton > button, /* Tombol untuk kontras jika perlu */
+    .stNumberInput, /* Input angka */
+    .stTextInput,
+    .css-1v0mbdj { /* Textarea */
+        background-color: rgba(255, 255, 255, 0.85) !important;
+        padding: 0.75rem 1rem !important;
+        border-radius: 12px !important;
+        /* Optional untuk bayangan halus */
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    /* Untuk beberapa header, judul agar lebih tegas */
+    h1, h2, h3, h4, h5, h6 {
+        background-color: rgba(255, 255, 255, 0.85);
+        padding: 0.5rem 1rem;
+        border-radius: 10px;
+    }
+    </style>
     """,
-    unsafe_allow_html=True
+    unsafe_allow_html=True,
 )
 
 # --- COVER & SIDEBAR MENU ---
