@@ -48,7 +48,7 @@ with st.container():
         <div class="black-box" style='width:100%;text-align:center; margin-bottom:1rem;'>
         <span style='font-size:3rem;'>🧪</span>
         </div>
-        <h1 style='text-align:center;'>Website Kalkulator Analisis Presisi & Akurasi</h1>
+        <h1 class="black-box" style='text-align:center;'>Website Kalkulator Analisis Presisi & Akurasi</h1>
         <p style='text-align:center; max-width:600px; margin:0 auto;'>
             <em>Lab Digital Pintar Spektrofotometri – Streamlit Edition</em><br>
             Hitung regresi linier, presisi (%RPD/%RSD), dan akurasi (%Recovery) dengan mudah, berbasis input absorbansi dan konsentrasi.
