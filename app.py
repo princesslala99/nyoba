@@ -18,25 +18,28 @@ def add_bg_from_local(image_file):
              background-position: center;
          }}
 
-         /* Hilangkan semua black box (tidak ada latar belakang transparan) */
-         
-         /* Gunakan warna teks putih agar tetap terbaca di background gelap */
-         .stMarkdown, .stText, .stTitle, .stHeader, .stSubheader, .stDataFrame, .stTable, .stCaption,
-         .stSuccess, .stInfo, .stWarning, .stError, .stAlert {{
-             background-color: transparent !important;
+         /* Black box hanya untuk blok utama yang penting di konten utama */
+         [data-testid="stMarkdownContainer"], .stAlert, .stHeader, .stSubheader, .stTitle,
+         .stSuccess, .stInfo, .stWarning, .stError, .stCaption {{
+             background-color: rgba(0,0,0,0.6) !important;
+             border-radius: 12px;
+             padding: 1.2rem !important;
              color: white !important;
+             margin-bottom: 1rem;
+         }}
+
+         /* Sidebar tanpa black box, default transparan dan style bawaan */
+         section[data-testid="stSidebar"] .block-container {{
+             background-color: transparent !important;
+             color: inherit !important;
              padding: 0 !important;
-             margin-bottom: 0.5rem !important;
              border-radius: 0 !important;
              box-shadow: none !important;
          }}
 
-         /* Sidebar tidak diatur secara khusus, pakai default */
-         
-         /* Hilangkan shadow di dataframe agar tampil bagus */
+         /* Hilangkan shadow di dataframe agar tampil konsisten */
          .css-1d391kg, .css-1n76uvr, .css-1cpxqw2, .stDataFrame, .esravye2  {{
              box-shadow: none !important;
-             background-color: transparent !important;
          }}
          </style>
          """,
