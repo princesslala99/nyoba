@@ -16,10 +16,36 @@ def add_bg_from_local(image_file):
              background-attachment: fixed;
              background-position: center;
          }}
+
+         /* Tambahan: background semi-transparan untuk blok teks */
+         .transparent-box {{
+             background-color: rgba(255, 255, 255, 0.7);
+             padding: 1rem;
+             border-radius: 10px;
+             box-shadow: 0 0 10px rgba(0,0,0,0.2);
+             margin-bottom: 1rem;
+         }}
          </style>
          """,
         unsafe_allow_html=True
     )
+st.markdown(
+    """
+    <div class='transparent-box'>
+        <div style='width:100%;text-align:center; margin-bottom:1rem;'>
+        <span style='font-size:3rem;'>🧪</span>
+        </div>
+        <h1 style='text-align:center;'>Website Kalkulator Analisis Presisi & Akurasi</h1>
+        <p style='text-align:center; max-width:600px; margin:0 auto;'>
+            <em>Lab Digital Pintar Spektrofotometri – Streamlit Edition</em><br>
+            Hitung regresi linier, presisi (%RPD/%RSD), dan akurasi (%Recovery) dengan mudah, berbasis input absorbansi dan konsentrasi.
+        </p>
+    </div>
+    """, unsafe_allow_html=True
+)
+st.markdown("<div class='transparent-box'>", unsafe_allow_html=True)
+# st.write(), st.header(), dsb.
+st.markdown("</div>", unsafe_allow_html=True)
 
 add_bg_from_local("images/background_avif.jpg")
 
