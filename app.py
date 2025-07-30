@@ -21,7 +21,7 @@ def add_bg_from_local(image_file):
         unsafe_allow_html=True
     )
 
-add_bg_from_local("image/bg.avif")
+add_bg_from_local("images/background.avif")
 
 # --- COVER & SIDEBAR MENU ---
 st.set_page_config(
