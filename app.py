@@ -261,7 +261,7 @@ elif menu == "🧮 Hitung Konsentrasi & Presisi":
                     emoji, status = info_precision(prec_val, prec_typ)
                     st.info(f"{emoji} {prec_typ}: {prec_val:.2f}% — {status}")
                 else:
-                    st.info("Isi minimal 2 data konsentrasi untuk hitung presisi."
+                    st.info("Isi minimal 2 data konsentrasi untuk hitung presisi.")
                 # Validasi syarat keberterimaan < 10%
         if prec_val < 10:
             st.success(f"✅ {prec_typ} berada di bawah 10% — Hasil diterima")
