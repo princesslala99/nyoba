@@ -263,7 +263,7 @@ elif menu == "🧮 Hitung Konsentrasi & Presisi":
                 else:
                     st.info("Isi minimal 2 data konsentrasi untuk hitung presisi.")
                 # Validasi syarat keberterimaan < 10%
-        if prec_val < 10:
+        if prec_typ < 10:
             st.success(f"✅ {prec_typ} berada di bawah 10% — Hasil diterima")
         else:
             st.error(f"❌ {prec_typ} ≥ 10% — Hasil tidak diterima")
