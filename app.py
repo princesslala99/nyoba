@@ -3,61 +3,63 @@ import numpy as np
 import pandas as pd
 import base64
 
+# Fungsi untuk set background image dari file lokal dengan base64 encode
 def add_bg_from_local(image_file):
     with open(image_file, "rb") as f:
         data = f.read()
         encoded = base64.b64encode(data).decode()
-   st.markdown(
-    f"""
-     <style>
-     .stApp {{
-         background-image: url("data:image/jpg;base64,{encoded}");
-         background-size: cover;
-         background-attachment: fixed;
-         background-position: center;
-     }}
+    st.markdown(
+        f"""
+         <style>
+         .stApp {{
+             background-image: url("data:image/jpg;base64,{encoded}");
+             background-size: cover;
+             background-attachment: fixed;
+             background-position: center;
+         }}
 
-     /* Kotak transparan hitam di SEMUA blok teks utama */
-     [data-testid="stMarkdownContainer"], .stAlert, .stText, .stHeader, .stSubheader, .stTitle, .stDataFrame, .stTable, .stCaption, .stSuccess, .stInfo, .stWarning, .stError {{
-         background-color: rgba(0,0,0,0.6) !important;
-         border-radius: 12px;
-         padding: 1.2rem !important;
-         color: white !important;
-         margin-bottom: 1rem;
-     }}
+         /* Kotak transparan hitam di SEMUA blok teks utama dan komponen informasi */
+         [data-testid="stMarkdownContainer"], .stAlert, .stText, .stHeader, .stSubheader, .stTitle, 
+         .stDataFrame, .stTable, .stCaption, .stSuccess, .stInfo, .stWarning, .stError {{
+             background-color: rgba(0,0,0,0.6) !important;
+             border-radius: 12px;
+             padding: 1.2rem !important;
+             color: white !important;
+             margin-bottom: 1rem;
+         }}
 
-     /* Untuk elemen di sidebar agar konsisten juga */
-     section[data-testid="stSidebar"] .block-container {{
-         background-color:rgba(0,0,0,0.7) !important;
-         border-radius:12px;
-         color:white !important;
-     }}
+         /* Sidebar juga diberi latar gelap transparan */
+         section[data-testid="stSidebar"] .block-container {{
+             background-color:rgba(0,0,0,0.7) !important;
+             border-radius:12px;
+             color:white !important;
+         }}
 
-     /* Hapus shadow pada dataframe agar lebih rata */
-     .css-1d391kg, .css-1n76uvr, .css-1cpxqw2, .stDataFrame, .esravye2  {{
-         box-shadow: none !important;
-     }}
-     </style>
-    """,
-    unsafe_allow_html=True
-)
+         /* Hilangkan bayangan di dataframe agar rata dengan black box */
+         .css-1d391kg, .css-1n76uvr, .css-1cpxqw2, .stDataFrame, .esravye2  {{
+             box-shadow: none !important;
+         }}
+         </style>
+         """,
+        unsafe_allow_html=True
+    )
 
+# Panggil fungsi background, ganti path sesuai file Anda
 add_bg_from_local("images/background_avif.jpg")
 
-# --- COVER & SIDEBAR MENU ---
+# --- KONFIGURASI HALAMAN ---
 st.set_page_config(
     page_title="🧪 Website Kalkulator Analisis Presisi dan Akurasi",
     layout="wide"
 )
-# COVER: Judul & Deskripsi
+
+# --- HEADER BERANDA ---
 with st.container():
     st.markdown(
         """
-        <div class="black-box" style='width:100%;text-align:center; margin-bottom:1rem;'>
-        <span style='font-size:3rem;'>🧪</span>
-        </div>
-        <h1 class="black-box" style='text-align:center;'>Website Kalkulator Analisis Presisi & Akurasi</h1>
-        <p class="black-box" style='text-align:center; max-width:600px; margin:0 auto;'>
+        <div style='width:100%;text-align:center; margin-bottom:1rem; font-size:3rem;'>🧪</div>
+        <h1 style='text-align:center;'>Website Kalkulator Analisis Presisi & Akurasi</h1>
+        <p style='text-align:center; max-width:600px; margin:0 auto;'>
             <em>Lab Digital Pintar Spektrofotometri – Streamlit Edition</em><br>
             Hitung regresi linier, presisi (%RPD/%RSD), dan akurasi (%Recovery) dengan mudah, berbasis input absorbansi dan konsentrasi.
         </p>
@@ -65,14 +67,14 @@ with st.container():
     )
     st.markdown("---")
 
-# --- SIDEBAR MENU ---
+# --- MENU NAVIGASI SIDEBAR ---
 menu = st.sidebar.radio(
     "Menu Navigasi",
     ["🏠 Beranda", "📈 Regresi & Grafik", "🧮 Hitung Konsentrasi & Presisi", "✅ Evaluasi Akurasi"],
     index=0
 )
 
-# --- UTILITIES ---
+# --- UTILITAS ---
 def parse_numbers(text):
     text = text.strip()
     if not text:
@@ -149,7 +151,7 @@ def info_akurasi(val):
         e, s = "🔴", "Akurasi Perlu Diperbaiki"
     return e, s
 
-# --- INISIALISASI SESSION STATE REGRESI ---
+# Inisialisasi session state regresi linear
 if "slope" not in st.session_state:
     st.session_state.slope = None
 if "intercept" not in st.session_state:
@@ -159,7 +161,7 @@ if "r2" not in st.session_state:
 if "reg_ready" not in st.session_state:
     st.session_state.reg_ready = False
 
-# --- MENU: HOME / COVER ---
+# --- MENU Content ---
 if menu == "🏠 Beranda":
     st.subheader("Aplikasi Kalkulator Laboratorium Digital")
     st.markdown("""
@@ -172,7 +174,7 @@ if menu == "🏠 Beranda":
         "Tips: Lakukan input data standar dan klik tombol di setiap langkah. Seluruh fitur bekerja tanpa perlu refresh halaman!"
     )
     st.success("Gunakan sidebar di kiri layar untuk memilih fitur utama.")
-# --- MENU: REGRESI & GRAFIK ---
+
 elif menu == "📈 Regresi & Grafik":
     st.header("Step 1: Input Data Standar (Regresi Linier)")
 
@@ -230,7 +232,6 @@ elif menu == "📈 Regresi & Grafik":
         if st.session_state.get("reg_ready", False):
             st.info("Persamaan regresi sudah tersedia. Lanjutkan ke menu berikutnya untuk perhitungan sampel.")
 
-# --- MENU: HITUNG KONSENTRASI & PRESISI ---
 elif menu == "🧮 Hitung Konsentrasi & Presisi":
     st.header("Step 2: Multi Sampel Absorbansi & Hitung Konsentrasi")
 
@@ -271,7 +272,6 @@ elif menu == "🧮 Hitung Konsentrasi & Presisi":
                 else:
                     st.info("Isi minimal 2 data konsentrasi untuk hitung presisi.")
 
-# --- MENU: EVALUASI AKURASI (%RECOVERY) ---
 elif menu == "✅ Evaluasi Akurasi":
     st.header("Step 3: Evaluasi Akurasi (%Recovery)")
 
@@ -302,9 +302,10 @@ elif menu == "✅ Evaluasi Akurasi":
             st.success(f"{emoji} %Recovery = {recovery:.2f}%")
             st.caption(f"Status Akurasi: {status}  \nFormula: ((C-spike terukur - C-awal) / C-ditambahkan) × 100%")
 
+# FOOTER
 st.markdown(
     """
-    <div class="black-box" style='text-align:left;color:gray;font-size:13px;line-height:1.6; margin-top: 2rem;'>
+    <div style='text-align:left;color:gray;font-size:13px;line-height:1.6; margin-top: 2rem;'>
         <p>Web App by Kelompok 10 Kelas 1A</p>
         <p>ALIVIA AZZAHRA - 2460317</p>
         <p>KARINA RAHMA YULITHA - 2460398</p>
