@@ -22,6 +22,18 @@ def add_bg_from_local(image_file):
     )
 
 add_bg_from_local("images/background_avif.jpg")
+st.markdown(
+    """
+    <div style="background-color: rgba(255, 255, 255, 0.85); padding: 1rem; border-radius: 10px;">
+        <h1 style="text-align:center;">Website Kalkulator Analisis Presisi & Akurasi</h1>
+        <p style="text-align:center; max-width:600px; margin:auto;">
+            <em>Lab Digital Pintar Spektrofotometri – Streamlit Edition</em><br>
+            Hitung regresi linier, presisi (%RPD/%RSD), dan akurasi (%Recovery) dengan mudah, berbasis input absorbansi dan konsentrasi.
+        </p>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
 # --- COVER & SIDEBAR MENU ---
 st.set_page_config(
