@@ -7,33 +7,41 @@ def add_bg_from_local(image_file):
     with open(image_file, "rb") as f:
         data = f.read()
         encoded = base64.b64encode(data).decode()
-    st.markdown(
-        f"""
-         <style>
-         .stApp {{
-             background-image: url("data:image/jpg;base64,{encoded}");
-             background-size: cover;
-             background-attachment: fixed;
-             background-position: center;
-         }}
+   st.markdown(
+    f"""
+     <style>
+     .stApp {{
+         background-image: url("data:image/jpg;base64,{encoded}");
+         background-size: cover;
+         background-attachment: fixed;
+         background-position: center;
+     }}
 
-         /* Kotak transparan hitam di belakang teks */
-         .black-box {{
-             background-color: rgba(0, 0, 0, 0.6);
-             padding: 1.2rem;
-             border-radius: 12px;
-             color: white;
-             margin-bottom: 1rem;
-         }}
+     /* Kotak transparan hitam di SEMUA blok teks utama */
+     [data-testid="stMarkdownContainer"], .stAlert, .stText, .stHeader, .stSubheader, .stTitle, .stDataFrame, .stTable, .stCaption, .stSuccess, .stInfo, .stWarning, .stError {{
+         background-color: rgba(0,0,0,0.6) !important;
+         border-radius: 12px;
+         padding: 1.2rem !important;
+         color: white !important;
+         margin-bottom: 1rem;
+     }}
 
-         /* Ubah warna teks default menjadi putih */
-         .stMarkdown, .stText, .stTitle, .stHeader, .stSubheader, .stDataFrame, .stTable {{
-             color: white !important;
-         }}
-         </style>
-         """,
-        unsafe_allow_html=True
-    )
+     /* Untuk elemen di sidebar agar konsisten juga */
+     section[data-testid="stSidebar"] .block-container {{
+         background-color:rgba(0,0,0,0.7) !important;
+         border-radius:12px;
+         color:white !important;
+     }}
+
+     /* Hapus shadow pada dataframe agar lebih rata */
+     .css-1d391kg, .css-1n76uvr, .css-1cpxqw2, .stDataFrame, .esravye2  {{
+         box-shadow: none !important;
+     }}
+     </style>
+    """,
+    unsafe_allow_html=True
+)
+
 add_bg_from_local("images/background_avif.jpg")
 
 # --- COVER & SIDEBAR MENU ---
@@ -262,12 +270,6 @@ elif menu == "🧮 Hitung Konsentrasi & Presisi":
                     st.info(f"{emoji} {prec_typ}: {prec_val:.2f}% — {status}")
                 else:
                     st.info("Isi minimal 2 data konsentrasi untuk hitung presisi.")
-                # Validasi syarat keberterimaan < 10%
-               if prec_val < 10:
-                   st.success(f"✅ {prec_typ} berada di bawah 10% — Hasil diterima")
-               else:
-                   st.error(f"❌ {prec_typ} ≥ 10% — Hasil tidak diterima")
-
 
 # --- MENU: EVALUASI AKURASI (%RECOVERY) ---
 elif menu == "✅ Evaluasi Akurasi":
@@ -298,12 +300,7 @@ elif menu == "✅ Evaluasi Akurasi":
             recovery = ((val_measured - val_awal) / val_added) * 100
             emoji, status = info_akurasi(recovery)
             st.success(f"{emoji} %Recovery = {recovery:.2f}%")
-            # Validasi syarat keberterimaan recovery antara 80-120%
-    if 80 <= recovery <= 120:
-        st.success("✅ %Recovery berada dalam rentang 80-120% — Hasil diterima")
-    else:
-        st.error("❌ %Recovery di luar rentang 80-120% — Hasil tidak diterima")
-        st.caption(f"Status Akurasi: {status}  \nFormula: ((C-spike terukur - C-awal) / C-ditambahkan) × 100%")
+            st.caption(f"Status Akurasi: {status}  \nFormula: ((C-spike terukur - C-awal) / C-ditambahkan) × 100%")
 
 st.markdown(
     """
@@ -318,4 +315,3 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-
