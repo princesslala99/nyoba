@@ -1,30 +1,30 @@
 import streamlit as st
 import numpy as np
 import pandas as pd
-import base64
 import streamlit as st
 
-def set_background(png_file):
-    with open(png_file, "rb") as image_file:
-        encoded_string = base64.b64encode(image_file.read()).decode()
-    st.markdown(
-        f"""
-        <style>
-        .stApp {{
-            background-image: url("data:image/png;base64,{encoded_string}");
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
-        }}
-        </style>
-        """,
-        unsafe_allow_html=True
-    )
-
-# Panggil fungsi ini dengan path ke file gambarmu
-set_background("path_ke_foto_background.png")
-
+st.markdown(
+    """
+    <style>
+    .stApp {
+        background-image: url("https://cdn.pixabay.com/photo/2021/02/04/19/02/technology-5985446_960_720.jpg");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        background-color: rgba(255, 255, 255, 0.85); /* opsional: overlay putih semi transparan */
+        background-blend-mode: lighten; /* supaya teks tetap terbaca */
+    }
+    /* Membuat konten aplikasi tetap terlihat jelas */
+    .css-18e3th9 {
+        background-color: rgba(255, 255, 255, 0.9) !important;
+        padding: 1rem;
+        border-radius: 10px;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
 # --- COVER & SIDEBAR MENU ---
 st.set_page_config(
