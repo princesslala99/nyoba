@@ -164,7 +164,6 @@ if menu == "🏠 Beranda":
         "Tips: Lakukan input data standar dan klik tombol di setiap langkah. Seluruh fitur bekerja tanpa perlu refresh halaman!"
     )
     st.success("Gunakan sidebar di kiri layar untuk memilih fitur utama.")
-
 # --- MENU: REGRESI & GRAFIK ---
 elif menu == "📈 Regresi & Grafik":
     st.header("Step 1: Input Data Standar (Regresi Linier)")
