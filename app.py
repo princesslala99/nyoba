@@ -4,13 +4,73 @@ import pandas as pd
 import base64
 import time
 
-# Tombol interaktif dengan loading
-if st.button("🔢 Hitung Presisi & Akurasi"):
-    with st.spinner("⏳ Sedang menghitung..."):
-        time.sleep(2)  # Simulasi proses loading
-        st.success("✅ Hasil berhasil dihitung!")
+st.markdown("""
+<style>
+/* Sidebar container */
+[data-testid="stSidebar"] {
+    background: linear-gradient(145deg, #1e293b, #0f172a);
+    color: white;
+}
 
-# ========== CUSTOM STYLING ========== #
+/* Container radio */
+div[data-baseweb="radio"] {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+/* Hide radio input */
+div[data-baseweb="radio"] input[type="radio"] {
+    display: none !important;
+}
+
+/* Style radio label */
+label[data-baseweb="radio"] {
+    display: flex;
+    align-items: center;
+    background-color: #1e293b;
+    padding: 0.7rem 1rem;
+    border-radius: 12px;
+    border: 1.5px solid #334155;
+    color: #e2e8f0;
+    font-weight: 500;
+    font-size: 0.95rem;
+    transition: all 0.25s ease-in-out;
+    box-shadow: inset 0 0 0 0 transparent;
+    min-height: 3.2rem;
+}
+
+/* Hover efek */
+label[data-baseweb="radio"]:hover {
+    background-color: #334155;
+    transform: scale(1.03);
+    cursor: pointer;
+    border-color: #64748b;
+}
+
+/* Active radio item */
+div[data-baseweb="radio"] > div[aria-checked="true"] label {
+    background-color: #0ea5e9 !important;
+    border-color: #38bdf8 !important;
+    color: white !important;
+    box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.5);
+}
+
+/* Jaga jarak dan rapi */
+label svg {
+    margin-right: 0.6rem;
+    min-width: 1rem;
+    max-height: 1rem;
+}
+
+/* Tekstnya tetap rata kiri */
+label[data-baseweb="radio"] > div {
+    text-align: left;
+    flex-grow: 1;
+}
+</style>
+""", unsafe_allow_html=True)
+
 st.markdown("""
     <style>
     /* Background gradient & text */
@@ -47,42 +107,6 @@ st.markdown("""
     }
     </style>
 """, unsafe_allow_html=True)
-
-# ========== APP CONTENT ========== #
-
-st.title("📊 Analisis Statistik Interaktif")
-
-st.subheader("Upload Dataset CSV kamu")
-uploaded_file = st.file_uploader("Pilih file CSV", type="csv")
-
-if uploaded_file:
-    df = pd.read_csv(uploaded_file)
-    st.success("✅ File berhasil diunggah!")
-
-    st.subheader("📄 Preview Data")
-    st.dataframe(df.head())
-
-    # Kolom numerik untuk analisis
-    numeric_cols = df.select_dtypes(include=['int', 'float']).columns.tolist()
-
-    if numeric_cols:
-        st.subheader("📈 Analisis Statistik")
-        col = st.selectbox("Pilih kolom untuk dianalisis", numeric_cols)
-
-        if st.button("Hitung Statistik"):
-            with st.spinner("Sedang menghitung..."):
-                time.sleep(1)  # Loading palsu biar ada efek spinner
-
-                st.write(f"*Rata-rata {col}:* {df[col].mean():.2f}")
-                st.write(f"*Median {col}:* {df[col].median():.2f}")
-                st.write(f"*Standar Deviasi {col}:* {df[col].std():.2f}")
-                st.write(f"*Nilai Minimum {col}:* {df[col].min():.2f}")
-                st.write(f"*Nilai Maksimum {col}:* {df[col].max():.2f}")
-
-    else:
-        st.warning("⚠ Tidak ada kolom numerik dalam file CSV.")
-else:
-    st.info("Silakan unggah file CSV untuk memulai analisis.")
 
 
 st.markdown("""
@@ -524,8 +548,15 @@ elif menu == "✅ Evaluasi Akurasi":
             else:
                 recovery = ((val_measured - val_awal) / val_added) * 100
                 emoji, status = info_akurasi(recovery)
-                st.success(f"{emoji} %Recovery = {recovery:.2f}%")
-                st.caption(f"🧾 Status Akurasi: {status}  \n📐 Formula: ((C-spike terukur - C-awal) / C-ditambahkan) × 100%")
+            st.success(f"{emoji} %Recovery = {recovery:.2f}%")
+            if 85 <= recovery <= 115:
+                st.markdown("<span style='color:#2ecc71;font-weight:bold;'>✅ Hasilnya Bagus! Akurasi pengukuran dalam rentang ideal (85–115%).</span>", unsafe_allow_html=True)
+            elif recovery < 85:
+                st.markdown("<span style='color:#f39c12;font-weight:bold;'>⚠ %Recovery terlalu rendah. Kemungkinan ada kehilangan analit saat pengujian.</span>", unsafe_allow_html=True)
+            else:
+                st.markdown("<span style='color:#e74c3c;font-weight:bold;'>⚠ %Recovery terlalu tinggi. Bisa jadi ada kontaminasi atau kesalahan pengukuran.</span>", unsafe_allow_html=True)
+            st.caption("📐 Formula: ((C-spike terukur - C-awal) / C-ditambahkan) × 100%")
+
 
 st.markdown(
     """
