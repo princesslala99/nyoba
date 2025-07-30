@@ -22,65 +22,6 @@ def add_bg_from_local(image_file):
     )
 
 add_bg_from_local("images/background_avif.jpg")
-st.markdown(
-    """
-    <style>
-    /* Hilangkan kotak di atas judul dan footer */
-    /* Asumsikan footer kamu berada dalam div tertentu (kalau tidak ada, tidak diatur) */
-    
-    /* Atur judul utama dan elemen sejenis supaya tanpa background */
-    h1, .custom-title {
-        background-color: transparent !important;
-        padding: 0 !important;
-        margin: 0 !important;
-        color: white !important; /* Agar judul tetap kontras */
-    }
-
-    /* Atur footer */
-    .app-footer {
-        background-color: transparent !important;
-        color: gray !important;
-        padding: 0 !important;
-        margin-top: 1rem;
-        font-size: 13px;
-        text-align: center;
-    }
-
-    /*
-    Terapkan kotak hitam transparan hanya pada teks tips, warnings, info, success, dan bagian lain yang berwarna
-    Biasanya Streamlit memakai kelas-kelas khusus seperti:
-    .stInfo, .stWarning, .stSuccess, .stError untuk box info berwarna
-    */
-    .stInfo, .stWarning, .stSuccess, .stError,
-    /* Tambahan block markdown biasa yang mungkin berisi tips */
-    .stMarkdown > div {
-        background-color: rgba(0, 0, 0, 0.75) !important; /* hitam transparan */
-        color: white !important; /* teks putih agar kontras */
-        padding: 1rem !important;
-        border-radius: 12px !important;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-        margin-top: 1rem;
-        margin-bottom: 1rem;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
-with st.container():
-    st.markdown(
-        """
-        <div class="custom-title" style="width:100%;text-align:center; margin-bottom:1rem;">
-        <span style='font-size:3rem; color:white;'>🧪</span>
-        <h1>Website Kalkulator Analisis Presisi & Akurasi</h1>
-        <p style="max-width:600px; margin:0 auto;">
-            <em>Lab Digital Pintar Spektrofotometri – Streamlit Edition</em><br>
-            Hitung regresi linier, presisi (%RPD/%RSD), dan akurasi (%Recovery) dengan mudah, berbasis input absorbansi dan konsentrasi.
-        </p>
-        </div>
-        """, 
-        unsafe_allow_html=True
-    )
-
 
 
 # --- COVER & SIDEBAR MENU ---
