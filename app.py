@@ -27,20 +27,6 @@ def add_bg_from_local(image_file):
              color: white !important;
              margin-bottom: 1rem;
          }}
-
-         /* Jangan beri black box di sidebar */
-         section[data-testid="stSidebar"] .block-container {{
-             background-color: transparent !important;
-             color: inherit !important;
-             padding: 0 !important;
-             border-radius: 0 !important;
-             box-shadow: none !important;
-         }}
-
-         /* Hilangkan shadow di dataframe agar rata dengan halaman */
-         .css-1d391kg, .css-1n76uvr, .css-1cpxqw2, .stDataFrame, .esravye2  {{
-             box-shadow: none !important;
-         }}
          </style>
          """,
         unsafe_allow_html=True
