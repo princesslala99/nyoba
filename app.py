@@ -18,9 +18,9 @@ def add_bg_from_local(image_file):
              background-position: center;
          }}
 
-         /* Kotak transparan hitam di SEMUA blok teks utama dan komponen informasi */
-         [data-testid="stMarkdownContainer"], .stAlert, .stText, .stHeader, .stSubheader, .stTitle, 
-         .stDataFrame, .stTable, .stCaption, .stSuccess, .stInfo, .stWarning, .stError {{
+         /* Black box hanya untuk blok utama yang penting */
+         [data-testid="stMarkdownContainer"], .stAlert, .stHeader, .stSubheader, .stTitle,
+         .stSuccess, .stInfo, .stWarning, .stError, .stCaption {{
              background-color: rgba(0,0,0,0.6) !important;
              border-radius: 12px;
              padding: 1.2rem !important;
@@ -28,14 +28,16 @@ def add_bg_from_local(image_file):
              margin-bottom: 1rem;
          }}
 
-         /* Sidebar juga diberi latar gelap transparan */
+         /* Jangan beri black box di sidebar */
          section[data-testid="stSidebar"] .block-container {{
-             background-color:rgba(0,0,0,0.7) !important;
-             border-radius:12px;
-             color:white !important;
+             background-color: transparent !important;
+             color: inherit !important;
+             padding: 0 !important;
+             border-radius: 0 !important;
+             box-shadow: none !important;
          }}
 
-         /* Hilangkan bayangan di dataframe agar rata dengan black box */
+         /* Hilangkan shadow di dataframe agar rata dengan halaman */
          .css-1d391kg, .css-1n76uvr, .css-1cpxqw2, .stDataFrame, .esravye2  {{
              box-shadow: none !important;
          }}
@@ -74,7 +76,7 @@ menu = st.sidebar.radio(
     index=0
 )
 
-# --- UTILITAS ---
+### UTILITAS ###
 def parse_numbers(text):
     text = text.strip()
     if not text:
@@ -161,7 +163,7 @@ if "r2" not in st.session_state:
 if "reg_ready" not in st.session_state:
     st.session_state.reg_ready = False
 
-# --- MENU Content ---
+# --- MENU CONTENT ---
 if menu == "🏠 Beranda":
     st.subheader("Aplikasi Kalkulator Laboratorium Digital")
     st.markdown("""
