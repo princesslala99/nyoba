@@ -50,9 +50,6 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-st.markdown("<div class='black-box'>", unsafe_allow_html=True)
-st.info(f"🌟 %RSD: {val:.2f}% — Presisi Luar Biasa!")
-st.markdown("</div>", unsafe_allow_html=True)
 
 
 # --- COVER & SIDEBAR MENU ---
