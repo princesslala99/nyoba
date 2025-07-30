@@ -2,66 +2,206 @@ import streamlit as st
 import numpy as np
 import pandas as pd
 import base64
+import time
 
-# Fungsi untuk set background image dari file lokal dengan base64 encode
-def add_bg_from_local(image_file):
-    with open(image_file, "rb") as f:
-        data = f.read()
-        encoded = base64.b64encode(data).decode()
-    st.markdown(
-        f"""
-         <style>
-         .stApp {{
-             background-image: url("data:image/jpg;base64,{encoded}");
-             background-size: cover;
-             background-attachment: fixed;
-             background-position: center;
-         }}
+# Tombol interaktif dengan loading
+if st.button("🔢 Hitung Presisi & Akurasi"):
+    with st.spinner("⏳ Sedang menghitung..."):
+        time.sleep(2)  # Simulasi proses loading
+        st.success("✅ Hasil berhasil dihitung!")
 
-         /* Black box hanya untuk blok utama yang penting di konten utama */
-         [data-testid="stMarkdownContainer"], .stAlert, .stHeader, .stSubheader, .stTitle,
-         .stSuccess, .stInfo, .stWarning, .stError, .stCaption {{
-             background-color: rgba(0,0,0,0.6) !important;
-             border-radius: 12px;
-             padding: 1.2rem !important;
-             color: white !important;
-             margin-bottom: 1rem;
-         }}
+# ========== CUSTOM STYLING ========== #
+st.markdown("""
+    <style>
+    /* Background gradient & text */
+    .stApp {
+        background: linear-gradient(to right, #141e30, #243b55);
+        color: white;
+    }
 
-         /* Sidebar tanpa black box, default transparan dan style bawaan */
-         section[data-testid="stSidebar"] .block-container {{
-             background-color: transparent !important;
-             color: inherit !important;
-             padding: 0 !important;
-             border-radius: 0 !important;
-             box-shadow: none !important;
-         }}
+    /* Tombol efek */
+    div.stButton > button {
+        background: #1f6feb;
+        color: white;
+        padding: 0.6em 1.2em;
+        font-weight: bold;
+        border-radius: 12px;
+        border: none;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+    div.stButton > button:hover {
+        background: #1a4fcc;
+        transform: scale(1.05);
+    }
 
-         /* Hilangkan shadow di dataframe agar tampil konsisten */
-         .css-1d391kg, .css-1n76uvr, .css-1cpxqw2, .stDataFrame, .esravye2  {{
-             box-shadow: none !important;
-         }}
-         </style>
-         """,
-        unsafe_allow_html=True
-    )
+    /* Judul dan teks lainnya */
+    .stMarkdown, .stText, .stTitle, .stHeader, .stSubheader {
+        color: white !important;
+    }
 
-# Panggil fungsi background, ganti path sesuai file Anda
-add_bg_from_local("images/background_avif.jpg")
+    /* Table & dataframe style */
+    .stDataFrame, .stTable {
+        background-color: rgba(255, 255, 255, 0.05);
+        border-radius: 10px;
+    }
+    </style>
+""", unsafe_allow_html=True)
 
-# --- KONFIGURASI HALAMAN ---
+# ========== APP CONTENT ========== #
+
+st.title("📊 Analisis Statistik Interaktif")
+
+st.subheader("Upload Dataset CSV kamu")
+uploaded_file = st.file_uploader("Pilih file CSV", type="csv")
+
+if uploaded_file:
+    df = pd.read_csv(uploaded_file)
+    st.success("✅ File berhasil diunggah!")
+
+    st.subheader("📄 Preview Data")
+    st.dataframe(df.head())
+
+    # Kolom numerik untuk analisis
+    numeric_cols = df.select_dtypes(include=['int', 'float']).columns.tolist()
+
+    if numeric_cols:
+        st.subheader("📈 Analisis Statistik")
+        col = st.selectbox("Pilih kolom untuk dianalisis", numeric_cols)
+
+        if st.button("Hitung Statistik"):
+            with st.spinner("Sedang menghitung..."):
+                time.sleep(1)  # Loading palsu biar ada efek spinner
+
+                st.write(f"*Rata-rata {col}:* {df[col].mean():.2f}")
+                st.write(f"*Median {col}:* {df[col].median():.2f}")
+                st.write(f"*Standar Deviasi {col}:* {df[col].std():.2f}")
+                st.write(f"*Nilai Minimum {col}:* {df[col].min():.2f}")
+                st.write(f"*Nilai Maksimum {col}:* {df[col].max():.2f}")
+
+    else:
+        st.warning("⚠ Tidak ada kolom numerik dalam file CSV.")
+else:
+    st.info("Silakan unggah file CSV untuk memulai analisis.")
+
+
+st.markdown("""
+<style>
+/* Fade in efek saat load */
+.stApp {
+    animation: fadeIn 1.5s ease-in;
+}
+
+@keyframes fadeIn {
+    0% { opacity: 0; transform: translateY(20px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Tombol animasi glow saat hover */
+button[kind="primary"] {
+    transition: 0.3s ease;
+    box-shadow: 0 0 0px transparent;
+}
+button[kind="primary"]:hover {
+    box-shadow: 0 0 12px rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px);
+}
+
+/* Efek float untuk icon judul */
+.black-box span {
+    display: inline-block;
+    animation: floatIcon 3s ease-in-out infinite;
+}
+@keyframes floatIcon {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-8px); }
+}
+
+/* Transisi halus di elemen teks */
+.black-box, .stMarkdown, .stText, .stTitle, .stHeader, .stSubheader {
+    transition: all 0.3s ease-in-out;
+}
+</style>
+""", unsafe_allow_html=True)
+
+st.markdown("""
+<style>
+/* Fade in saat load halaman */
+.stApp {
+    animation: fadeIn 1.2s ease-in;
+}
+
+@keyframes fadeIn {
+    0% { opacity: 0; transform: translateY(10px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Custom tombol */
+div.stButton > button {
+    background-color: #1f77b4;
+    color: white;
+    padding: 0.6em 1.2em;
+    border: none;
+    border-radius: 12px;
+    font-weight: bold;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+div.stButton > button:hover {
+    background-color: #105f99;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(0,0,0,0.2);
+}
+
+div.stButton > button:active {
+    transform: scale(0.98);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* Loading spinner (gunakan bersama tombol) */
+.spinner-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.spinner {
+    width: 36px;
+    height: 36px;
+    border: 4px solid rgba(255, 255, 255, 0.2);
+    border-top: 4px solid white;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+</style>
+""", unsafe_allow_html=True)
+
+
+
+# --- COVER & SIDEBAR MENU ---
 st.set_page_config(
     page_title="🧪 Website Kalkulator Analisis Presisi dan Akurasi",
     layout="wide"
 )
-
-# --- HEADER BERANDA ---
+# COVER: Judul & Deskripsi
 with st.container():
     st.markdown(
         """
-        <div style='width:100%;text-align:center; margin-bottom:1rem; font-size:3rem;'>🧪</div>
-        <h1 style='text-align:center;'>Website Kalkulator Analisis Presisi & Akurasi</h1>
-        <p style='text-align:center; max-width:600px; margin:0 auto;'>
+        <div class="black-box" style='width:100%;text-align:center; margin-bottom:1rem;'>
+        <span style='font-size:3rem;'>🧪</span>
+        </div>
+        <h1 class="black-box" style='text-align:center;'>Website Kalkulator Analisis Presisi & Akurasi</h1>
+        <p class="black-box" style='text-align:center; max-width:600px; margin:0 auto;'>
             <em>Lab Digital Pintar Spektrofotometri – Streamlit Edition</em><br>
             Hitung regresi linier, presisi (%RPD/%RSD), dan akurasi (%Recovery) dengan mudah, berbasis input absorbansi dan konsentrasi.
         </p>
@@ -69,14 +209,14 @@ with st.container():
     )
     st.markdown("---")
 
-# --- MENU NAVIGASI SIDEBAR ---
+# --- SIDEBAR MENU ---
 menu = st.sidebar.radio(
     "Menu Navigasi",
     ["🏠 Beranda", "📈 Regresi & Grafik", "🧮 Hitung Konsentrasi & Presisi", "✅ Evaluasi Akurasi"],
     index=0
 )
 
-### UTILITAS ###
+# --- UTILITIES ---
 def parse_numbers(text):
     text = text.strip()
     if not text:
@@ -153,7 +293,7 @@ def info_akurasi(val):
         e, s = "🔴", "Akurasi Perlu Diperbaiki"
     return e, s
 
-# Inisialisasi session state regresi linear
+# --- INISIALISASI SESSION STATE REGRESI ---
 if "slope" not in st.session_state:
     st.session_state.slope = None
 if "intercept" not in st.session_state:
@@ -163,22 +303,39 @@ if "r2" not in st.session_state:
 if "reg_ready" not in st.session_state:
     st.session_state.reg_ready = False
 
-# --- MENU CONTENT ---
+# --- MENU: HOME / COVER ---
 if menu == "🏠 Beranda":
     st.subheader("Aplikasi Kalkulator Laboratorium Digital")
     st.markdown("""
-    **Langkah kerja aplikasi:**  
-    1. Masukkan data standar pada menu **Regresi & Grafik** untuk mendapatkan persamaan linear kalibrasi.
-    2. Lanjut ke **Hitung Konsentrasi & Presisi** untuk menghitung nilai konsentrasi sampel dan uji presisi.
-    3. Gunakan menu **Evaluasi Akurasi** untuk menghitung akurasi metode (%Recovery) berdasarkan uji spike.
+    Langkah kerja aplikasi:  
+    1. Masukkan data standar pada menu Regresi & Grafik untuk mendapatkan persamaan linear kalibrasi.
+    2. Lanjut ke Hitung Konsentrasi & Presisi untuk menghitung nilai konsentrasi sampel dan uji presisi.
+    3. Gunakan menu Evaluasi Akurasi untuk menghitung akurasi metode (%Recovery) berdasarkan uji spike.
     """)
     st.info(
         "Tips: Lakukan input data standar dan klik tombol di setiap langkah. Seluruh fitur bekerja tanpa perlu refresh halaman!"
     )
     st.success("Gunakan sidebar di kiri layar untuk memilih fitur utama.")
-
+# --- MENU: REGRESI & GRAFIK ---
 elif menu == "📈 Regresi & Grafik":
-    st.header("Step 1: Input Data Standar (Regresi Linier)")
+    st.markdown("<h2 style='color:#1abc9c;'>📈 Step 1: Regresi & Grafik Kalibrasi</h2>", unsafe_allow_html=True)
+
+    st.markdown("""
+        <style>
+        button {
+            transition: all 0.2s ease-in-out;
+            transform: scale(1);
+        }
+        button:hover {
+            transform: scale(1.05);
+            background-color: #1d4ed8 !important;
+            color: white !important;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+
+    st.header("📈 Analisis Regresi Linier & Grafik Kalibrasi")
+    st.caption("Masukkan data konsentrasi dan absorbansi untuk membuat kurva kalibrasi dan persamaan regresi.")
 
     c1, c2 = st.columns(2)
     with c1:
@@ -186,128 +343,193 @@ elif menu == "📈 Regresi & Grafik":
     with c2:
         abs_str = st.text_area("📊 Absorbansi", "0.005, 0.105, 0.205, 0.305, 0.405, 0.505")
 
-    if st.button("⚗ Buat Grafik & Persamaan Regresi"):
-        x = parse_numbers(conc_str)
-        y = parse_numbers(abs_str)
+    if st.button("⚗ Proses Regresi & Tampilkan Grafik"):
+        with st.spinner("Menghitung regresi... mohon tunggu 🙏"):
+            x = parse_numbers(conc_str)
+            y = parse_numbers(abs_str)
 
-        if x is None or y is None:
-            st.error("Input hanya boleh angka dan koma. Periksa kembali format data.")
-            st.session_state.reg_ready = False
-        elif len(x) < 2 or len(y) < 2:
-            st.error("Minimal dua data konsentrasi dan absorbansi harus terisi.")
-            st.session_state.reg_ready = False
-        elif len(x) != len(y):
-            st.error(f"Jumlah data tidak sama: Konsentrasi: {len(x)}, Absorbansi: {len(y)}")
-            st.session_state.reg_ready = False
-        else:
-            slope, intercept, r2 = linear_regression(x, y)
-            if None in [slope, intercept, r2]:
-                st.error("Data tidak bisa di-regresi (cek nilai input Anda, hindari semua data sama).")
+            if x is None or y is None:
+                st.error("❌ Input hanya boleh angka dan koma. Periksa kembali format data.")
+                st.session_state.reg_ready = False
+            elif len(x) < 2 or len(y) < 2:
+                st.error("⚠ Minimal dua data konsentrasi dan absorbansi harus terisi.")
+                st.session_state.reg_ready = False
+            elif len(x) != len(y):
+                st.error(f"📉 Jumlah data tidak sama: Konsentrasi: {len(x)}, Absorbansi: {len(y)}")
                 st.session_state.reg_ready = False
             else:
-                st.session_state.slope = slope
-                st.session_state.intercept = intercept
-                st.session_state.r2 = r2
-                st.session_state.reg_ready = True
-                pers_eq = f"y = {slope:.4f} x + {intercept:.4f}"
-                st.success(f"✨ Persamaan Regresi: {pers_eq}")
-                st.caption(f"R² = {r2:.4f}")
+                slope, intercept, r2 = linear_regression(x, y)
+                if None in [slope, intercept, r2]:
+                    st.error("❌ Data tidak bisa di-regresi. Cek nilai input Anda, hindari semua data sama.")
+                    st.session_state.reg_ready = False
+                else:
+                    st.session_state.slope = slope
+                    st.session_state.intercept = intercept
+                    st.session_state.r2 = r2
+                    st.session_state.reg_ready = True
 
-                desc = (
-                    "Luar Biasa Sempurna!"
-                    if r2 > 0.99
-                    else ("Sangat Baik!" if r2 > 0.95 else ("Cukup Baik" if r2 > 0.90 else "Perlu Perbaikan"))
-                )
-                st.info(f"Status Korelasi: {desc}")
+                    pers_eq = f"y = {slope:.4f} x + {intercept:.4f}"
+                    st.success(f"✨ Persamaan Regresi: {pers_eq}")
+                    st.caption(f"R² = {r2:.4f}")
 
-                chart_df = pd.DataFrame({"Konsentrasi": x, "Absorbansi": y})
-                st.subheader("📈 Grafik Kurva Kalibrasi (standar)")
-                st.line_chart(chart_df.rename(columns={"Konsentrasi": "index"}).set_index("index"))
+                    desc = (
+                        "Luar Biasa Sempurna! 🎯" if r2 > 0.99
+                        else ("Sangat Baik! 👍" if r2 > 0.95 else ("Cukup Baik 💡" if r2 > 0.90 else "Perlu Perbaikan 🔧"))
+                    )
+                    st.info(f"Status Korelasi: {desc}")
 
-                # Grafik prediksi regresi
-                pred_df = pd.DataFrame({"Konsentrasi": np.linspace(x.min(), x.max(), 100)})
-                pred_df["Absorbansi (regresi)"] = slope * pred_df["Konsentrasi"] + intercept
-                plot_df = pd.DataFrame({"Absorbansi": y}, index=x)
-                plot_df_pred = pd.DataFrame({"Absorbansi (regresi)": pred_df["Absorbansi (regresi)"]}, index=pred_df["Konsentrasi"])
-                st.line_chart(pd.concat([plot_df, plot_df_pred], axis=1))
+                    import altair as alt
+                    chart_df = pd.DataFrame({"Konsentrasi": x, "Absorbansi": y})
+                    st.subheader("📊 Grafik Interaktif Kurva Kalibrasi")
+                    base = alt.Chart(chart_df).mark_circle(size=80).encode(
+                        x="Konsentrasi",
+                        y="Absorbansi",
+                        tooltip=["Konsentrasi", "Absorbansi"]
+                    ).interactive()
+
+                    reg_line = alt.Chart(pd.DataFrame({
+                        "Konsentrasi": np.linspace(x.min(), x.max(), 100)
+                    })).mark_line(color='orange').encode(
+                        x="Konsentrasi",
+                        y=alt.Y("y:Q", title="Absorbansi (regresi)")
+                    ).transform_calculate(
+                        y=f"{slope:.4f} * datum.Konsentrasi + {intercept:.4f}"
+                    )
+
+                    st.altair_chart(base + reg_line, use_container_width=True)
     else:
         if st.session_state.get("reg_ready", False):
-            st.info("Persamaan regresi sudah tersedia. Lanjutkan ke menu berikutnya untuk perhitungan sampel.")
+            st.info("✅ Persamaan regresi sudah tersedia. Lanjutkan ke menu berikutnya untuk hitung sampel.")
 
+
+# --- MENU: HITUNG KONSENTRASI & PRESISI ---
 elif menu == "🧮 Hitung Konsentrasi & Presisi":
-    st.header("Step 2: Multi Sampel Absorbansi & Hitung Konsentrasi")
+    st.markdown("<h2 style='color:#1abc9c;'>🧮 Step 2: Multi Sampel Absorbansi & Hitung Konsentrasi</h2>", unsafe_allow_html=True)
 
     if not st.session_state.get("reg_ready", False) or st.session_state.slope is None:
         st.warning(
-            "Lakukan perhitungan regresi terlebih dahulu pada menu **Regresi & Grafik**, agar persamaan regresi tersedia!"
+            "⚠ Lakukan perhitungan regresi terlebih dahulu pada menu Regresi & Grafik, agar persamaan regresi tersedia!"
         )
     else:
         abs_samp = st.text_area(
-            "Absorbansi Sampel (misal: 0.250, 0.255, 0.248)", "0.250, 0.255, 0.248"
+            "📥 Absorbansi Sampel (misal: 0.250, 0.255, 0.248)", "0.250, 0.255, 0.248"
         )
+
+        button_css = """
+        <style>
+        div.stButton > button:first-child {
+            background-color: #3498db;
+            color: white;
+            border-radius: 8px;
+            padding: 0.5em 1em;
+            transition: all 0.3s ease-in-out;
+            font-weight: bold;
+        }
+        div.stButton > button:first-child:hover {
+            background-color: #2ecc71;
+            transform: scale(1.03);
+            box-shadow: 0 0 10px rgba(46, 204, 113, 0.7);
+        }
+        </style>
+        """
+        st.markdown(button_css, unsafe_allow_html=True)
+
         if st.button("🧪 Hitung Semua Konsentrasi Sampel"):
-            ys = parse_numbers(abs_samp)
-            if ys is None:
-                st.error("Absorbansi sampel hanya boleh angka dan koma.")
-            elif len(ys) < 1:
-                st.error("Isi minimal 1 data absorbansi sampel.")
-            else:
-                slope = st.session_state.slope
-                intercept = st.session_state.intercept
-                c_terukur = (ys - intercept) / slope if slope != 0 else np.zeros_like(ys)
-                df = pd.DataFrame(
-                    {
-                        "Sampel": [f"Sampel {i+1}" for i in range(len(ys))],
-                        "Absorbansi": ys,
-                        "C-terukur (ppm)": c_terukur,
-                    }
-                )
-                st.dataframe(df.style.format({"Absorbansi": "{:.4f}", "C-terukur (ppm)": "{:.4f}"}), use_container_width=True)
-
-                mean_, std_ = np.mean(c_terukur), np.std(c_terukur, ddof=0)
-                st.success(f"Rata-rata: {mean_:.4f} ppm | Standar Deviasi: {std_:.4f} ppm | Jumlah Sampel: {len(c_terukur)}")
-
-                prec_val, prec_typ = precision(c_terukur)
-                if prec_val is not None:
-                    emoji, status = info_precision(prec_val, prec_typ)
-                    st.info(f"{emoji} {prec_typ}: {prec_val:.2f}% — {status}")
+            with st.spinner("⏳ Menghitung konsentrasi dan presisi..."):
+                ys = parse_numbers(abs_samp)
+                if ys is None:
+                    st.error("Absorbansi sampel hanya boleh angka dan koma.")
+                elif len(ys) < 1:
+                    st.error("Isi minimal 1 data absorbansi sampel.")
                 else:
-                    st.info("Isi minimal 2 data konsentrasi untuk hitung presisi.")
+                    slope = st.session_state.slope
+                    intercept = st.session_state.intercept
+                    c_terukur = (ys - intercept) / slope if slope != 0 else np.zeros_like(ys)
+                    df = pd.DataFrame(
+                        {
+                            "Sampel": [f"Sampel {i+1}" for i in range(len(ys))],
+                            "Absorbansi": ys,
+                            "C-terukur (ppm)": c_terukur,
+                        }
+                    )
 
+                    st.success("✅ Perhitungan selesai!")
+
+                    st.dataframe(
+                        df.style.format({"Absorbansi": "{:.4f}", "C-terukur (ppm)": "{:.4f}"}),
+                        use_container_width=True
+                    )
+
+                    mean_, std_ = np.mean(c_terukur), np.std(c_terukur, ddof=0)
+                    st.markdown(
+                        f"<p style='color:#34495e;font-weight:bold;'>📊 Rata-rata: {mean_:.4f} ppm &nbsp;&nbsp;|&nbsp;&nbsp; Standar Deviasi: {std_:.4f} ppm &nbsp;&nbsp;|&nbsp;&nbsp; Jumlah Sampel: {len(c_terukur)}</p>",
+                        unsafe_allow_html=True,
+                    )
+
+                    prec_val, prec_typ = precision(c_terukur)
+                    if prec_val is not None:
+                        emoji, status = info_precision(prec_val, prec_typ)
+                        st.info(f"{emoji} {prec_typ}: {prec_val:.2f}% — {status}")
+                    else:
+                        st.info("Isi minimal 2 data konsentrasi untuk hitung presisi.")
+
+
+# --- MENU: EVALUASI AKURASI (%RECOVERY) ---
 elif menu == "✅ Evaluasi Akurasi":
-    st.header("Step 3: Evaluasi Akurasi (%Recovery)")
+    st.markdown("<h2 style='color:#1abc9c;'>✅ Step 3: Evaluasi Akurasi (%Recovery)</h2>", unsafe_allow_html=True)
 
-    k1, k2, k3 = st.columns(3)
-    with k1:
+    col1, col2, col3 = st.columns(3)
+    with col1:
         s_measured = st.text_input("🧪 C-spike terukur (ppm)", "0")
-    with k2:
+    with col2:
         s_added = st.text_input("➕ C-spike ditambahkan (ppm)", "0")
-    with k3:
+    with col3:
         s_awal = st.text_input("🔬 C-sampel awal (ppm)", "0")
+
+    # Tambahkan gaya tombol dengan animasi hover
+    st.markdown("""
+        <style>
+        div.stButton > button:first-child {
+            background-color: #e67e22;
+            color: white;
+            border-radius: 8px;
+            padding: 0.5em 1em;
+            transition: all 0.3s ease-in-out;
+            font-weight: bold;
+        }
+        div.stButton > button:first-child:hover {
+            background-color: #27ae60;
+            transform: scale(1.05);
+            box-shadow: 0 0 10px rgba(39, 174, 96, 0.5);
+        }
+        </style>
+    """, unsafe_allow_html=True)
+
     if st.button("✅ Hitung %Recovery"):
-        def tofloat(x):
-            try:
-                return float(x)
-            except Exception:
-                return None
+        with st.spinner("⏳ Menghitung akurasi sampel..."):
+            def tofloat(x):
+                try:
+                    return float(x)
+                except Exception:
+                    return None
 
-        val_measured = tofloat(s_measured)
-        val_added = tofloat(s_added)
-        val_awal = tofloat(s_awal)
-        if None in [val_measured, val_added, val_awal]:
-            st.error("Semua input harus berupa angka (dan desimal gunakan titik).")
-        elif val_added == 0:
-            st.error("C-spike ditambahkan harus > 0.")
-        else:
-            recovery = ((val_measured - val_awal) / val_added) * 100
-            emoji, status = info_akurasi(recovery)
-            st.success(f"{emoji} %Recovery = {recovery:.2f}%")
-            st.caption(f"Status Akurasi: {status}  \nFormula: ((C-spike terukur - C-awal) / C-ditambahkan) × 100%")
+            val_measured = tofloat(s_measured)
+            val_added = tofloat(s_added)
+            val_awal = tofloat(s_awal)
 
-# FOOTER
+            if None in [val_measured, val_added, val_awal]:
+                st.error("❌ Semua input harus berupa angka (gunakan titik untuk desimal).")
+            elif val_added == 0:
+                st.error("⚠ C-spike ditambahkan harus lebih dari 0.")
+            else:
+                recovery = ((val_measured - val_awal) / val_added) * 100
+                emoji, status = info_akurasi(recovery)
+                st.success(f"{emoji} %Recovery = {recovery:.2f}%")
+                st.caption(f"🧾 Status Akurasi: {status}  \n📐 Formula: ((C-spike terukur - C-awal) / C-ditambahkan) × 100%")
+
 st.markdown(
     """
-    <div style='text-align:left;color:gray;font-size:13px;line-height:1.6; margin-top: 2rem;'>
+    <div class="black-box" style='text-align:left;color:gray;font-size:13px;line-height:1.6; margin-top: 2rem;'>
         <p>Web App by Kelompok 10 Kelas 1A</p>
         <p>ALIVIA AZZAHRA - 2460317</p>
         <p>KARINA RAHMA YULITHA - 2460398</p>
