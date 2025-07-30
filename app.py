@@ -1,7 +1,10 @@
 import streamlit as st
 import numpy as np
 import pandas as pd
+import dash
+from dash import dcc, html
 import plotly.graph_objs as go
+import numpy as np
 
 
 # --- COVER & SIDEBAR MENU ---
@@ -59,52 +62,28 @@ def linear_regression(x, y):
     r2 = 1 - ss_res / ss_tot if ss_tot != 0 else 1.0
     return slope, intercept, r2
     fig, ax = plt.subplots()
-    # Data input dari user
-x = parse_numbers(conc_str)
-y = parse_numbers(abs_str)
+   
+app = dash.Dash(__name__)
 
-# Hitung regresi
-slope, intercept, r2 = linear_regression(x, y)
-
-# Data prediksi linear (garis regresi)
+x = np.array([0, 1, 2, 3, 4, 5])
+y = np.array([0.005, 0.105, 0.205, 0.305, 0.405, 0.505])
+slope, intercept = np.polyfit(x, y, 1)
 x_pred = np.linspace(x.min(), x.max(), 100)
 y_pred = slope * x_pred + intercept
 
-# Buat figure Plotly
-fig = go.Figure()
+app.layout = html.Div(children=[
+    html.H1(children='Regresi Linier Dash'),
+    dcc.Graph(figure={
+        'data': [
+            go.Scatter(x=x, y=y, mode='markers', name='Data Asli'),
+            go.Scatter(x=x_pred, y=y_pred, mode='lines', name='Regresi Linear', line=dict(color='red'))
+        ],
+        'layout': go.Layout(xaxis={'title': 'Konsentrasi (ppm)'}, yaxis={'title': 'Absorbansi'})
+    })
+])
 
-# Tambahkan titik data asli (scatter)
-fig.add_trace(
-    go.Scatter(
-        x=x,
-        y=y,
-        mode='markers',
-        name='Data Asli',
-        marker=dict(color='blue')
-    )
-)
-
-# Tambahkan garis regresi linear
-fig.add_trace(
-    go.Scatter(
-        x=x_pred,
-        y=y_pred,
-        mode='lines',
-        name='Regresi Linear',
-        line=dict(color='red')
-    )
-)
-
-fig.update_layout(
-    xaxis_title='Konsentrasi (ppm)',
-    yaxis_title='Absorbansi',
-    title='Kurva Kalibrasi Regresi Linear',
-    legend_title='Keterangan'
-)
-
-# Tampilkan grafik di Streamlit
-st.plotly_chart(fig, use_container_width=True)
-
+if __name__ == '__main__':
+    app.run_server(debug=True)
 
 def precision(concs):
     if concs is None or len(concs) < 2:
