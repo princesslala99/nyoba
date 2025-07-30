@@ -1,10 +1,29 @@
 import streamlit as st
 import numpy as np
 import pandas as pd
-import dash
-from dash import dcc, html
-import plotly.graph_objs as go
-import numpy as np
+import base64
+import streamlit as st
+
+def set_background(png_file):
+    with open(png_file, "rb") as image_file:
+        encoded_string = base64.b64encode(image_file.read()).decode()
+    st.markdown(
+        f"""
+        <style>
+        .stApp {{
+            background-image: url("data:image/png;base64,{encoded_string}");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }}
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+
+# Panggil fungsi ini dengan path ke file gambarmu
+set_background("path_ke_foto_background.png")
 
 
 # --- COVER & SIDEBAR MENU ---
@@ -61,29 +80,6 @@ def linear_regression(x, y):
     ss_res = np.sum((y - y_pred)**2)
     r2 = 1 - ss_res / ss_tot if ss_tot != 0 else 1.0
     return slope, intercept, r2
-    fig, ax = plt.subplots()
-   
-app = dash.Dash(__name__)
-
-x = np.array([0, 1, 2, 3, 4, 5])
-y = np.array([0.005, 0.105, 0.205, 0.305, 0.405, 0.505])
-slope, intercept = np.polyfit(x, y, 1)
-x_pred = np.linspace(x.min(), x.max(), 100)
-y_pred = slope * x_pred + intercept
-
-app.layout = html.Div(children=[
-    html.H1(children='Regresi Linier Dash'),
-    dcc.Graph(figure={
-        'data': [
-            go.Scatter(x=x, y=y, mode='markers', name='Data Asli'),
-            go.Scatter(x=x_pred, y=y_pred, mode='lines', name='Regresi Linear', line=dict(color='red'))
-        ],
-        'layout': go.Layout(xaxis={'title': 'Konsentrasi (ppm)'}, yaxis={'title': 'Absorbansi'})
-    })
-])
-
-if __name__ == '__main__':
-    app.run_server(debug=True)
 
 def precision(concs):
     if concs is None or len(concs) < 2:
