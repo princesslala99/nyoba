@@ -297,14 +297,14 @@ elif menu == "✅ Evaluasi Akurasi":
 
 st.markdown(
     """
----
-<div style='text-align:left;color:gray;font-size:13px;line-height:1.5;'>
-ALIVIA AZZAHRA-2460317; 
-KARINA RAHMA YULITHA-2460398;
-NAILA NASYWA FADHILAH-2460454;
-REVANSHA M. ALAM F.-2460495;
-ZASKIA ADYA RACHMA-2460545
-</div>
-""",
-    unsafe_allow_html=True,
+    <div class="black-box" style='text-align:left;color:gray;font-size:13px;line-height:1.6; margin-top: 2rem;'>
+        <p>ALIVIA AZZAHRA - 2460317</p>
+        <p>KARINA RAHMA YULITHA - 2460398</p>
+        <p>NAILA NASYWA FADHILAH - 2460454</p>
+        <p>REVANSHA M. ALAM F. - 2460495</p>
+        <p>ZASKIA ADYA RACHMA - 2460545</p>
+    </div>
+    """,
+    unsafe_allow_html=True
 )
+
