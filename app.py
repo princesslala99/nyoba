@@ -16,11 +16,43 @@ def add_bg_from_local(image_file):
              background-attachment: fixed;
              background-position: center;
          }}
+
+         /* Kotak transparan hitam di belakang teks */
+         .black-box {{
+             background-color: rgba(0, 0, 0, 0.6);
+             padding: 1.2rem;
+             border-radius: 12px;
+             color: white;
+             margin-bottom: 1rem;
+         }}
+
+         /* Ubah warna teks default menjadi putih */
+         .stMarkdown, .stText, .stTitle, .stHeader, .stSubheader, .stDataFrame, .stTable {{
+             color: white !important;
+         }}
          </style>
          """,
         unsafe_allow_html=True
     )
 add_bg_from_local("images/background_avif.jpg")
+st.markdown(
+    """
+    <div class='black-box'>
+        <div style='width:100%;text-align:center; margin-bottom:1rem;'>
+            <span style='font-size:3rem;'>🧪</span>
+        </div>
+        <h1 style='text-align:center;'>Website Kalkulator Analisis Presisi & Akurasi</h1>
+        <p style='text-align:center; max-width:600px; margin:0 auto;'>
+            <em>Lab Digital Pintar Spektrofotometri – Streamlit Edition</em><br>
+            Hitung regresi linier, presisi (%RPD/%RSD), dan akurasi (%Recovery) dengan mudah, berbasis input absorbansi dan konsentrasi.
+        </p>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+st.markdown("<div class='black-box'>", unsafe_allow_html=True)
+st.info(f"🌟 %RSD: {val:.2f}% — Presisi Luar Biasa!")
+st.markdown("</div>", unsafe_allow_html=True)
 
 
 # --- COVER & SIDEBAR MENU ---
