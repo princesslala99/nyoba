@@ -25,29 +25,30 @@ add_bg_from_local("images/background_avif.jpg")
 st.markdown(
     """
     <style>
-    /* Terapkan background putih transparan pada hampir semua teks dan container utama */
+    /* Terapkan background hitam transparan pada hampir semua teks dan container utama */
     .css-18e3th9, /* Konten utama container */
     .css-1d391kg, /* Kadang container lain untuk input dan teks */
     .stMarkdown, 
     .stText, 
     .stText > div,
-    .stRadio, /* Radio buttons label */
-    .stButton > button, /* Tombol untuk kontras jika perlu */
+    .stRadio, /* Label radio button */
+    .stButton > button, /* Tombol */
     .stNumberInput, /* Input angka */
     .stTextInput,
     .css-1v0mbdj { /* Textarea */
-        background-color: rgba(255, 255, 255, 0.85) !important;
+        background-color: rgba(0, 0, 0, 0.75) !important;  /* Hitam dengan 75% opacity */
         padding: 0.75rem 1rem !important;
         border-radius: 12px !important;
-        /* Optional untuk bayangan halus */
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        color: white !important; /* Warna teks putih agar kontras */
     }
 
-    /* Untuk beberapa header, judul agar lebih tegas */
+    /* Header agar lebih jelas */
     h1, h2, h3, h4, h5, h6 {
-        background-color: rgba(255, 255, 255, 0.85);
+        background-color: rgba(0, 0, 0, 0.75);
         padding: 0.5rem 1rem;
         border-radius: 10px;
+        color: white;
     }
     </style>
     """,
