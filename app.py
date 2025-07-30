@@ -1,7 +1,7 @@
 import streamlit as st
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
+import plotly.graph_objs as go
 
 
 # --- COVER & SIDEBAR MENU ---
@@ -59,12 +59,52 @@ def linear_regression(x, y):
     r2 = 1 - ss_res / ss_tot if ss_tot != 0 else 1.0
     return slope, intercept, r2
     fig, ax = plt.subplots()
-ax.scatter(x, y, color='blue', label='Data Asli')
-ax.plot(pred_df["Konsentrasi"], pred_df["Absorbansi (regresi)"], color='red', label='Regresi Linear')
-ax.set_xlabel("Konsentrasi (ppm)")
-ax.set_ylabel("Absorbansi")
-ax.legend()
-st.pyplot(fig)
+    # Data input dari user
+x = parse_numbers(conc_str)
+y = parse_numbers(abs_str)
+
+# Hitung regresi
+slope, intercept, r2 = linear_regression(x, y)
+
+# Data prediksi linear (garis regresi)
+x_pred = np.linspace(x.min(), x.max(), 100)
+y_pred = slope * x_pred + intercept
+
+# Buat figure Plotly
+fig = go.Figure()
+
+# Tambahkan titik data asli (scatter)
+fig.add_trace(
+    go.Scatter(
+        x=x,
+        y=y,
+        mode='markers',
+        name='Data Asli',
+        marker=dict(color='blue')
+    )
+)
+
+# Tambahkan garis regresi linear
+fig.add_trace(
+    go.Scatter(
+        x=x_pred,
+        y=y_pred,
+        mode='lines',
+        name='Regresi Linear',
+        line=dict(color='red')
+    )
+)
+
+fig.update_layout(
+    xaxis_title='Konsentrasi (ppm)',
+    yaxis_title='Absorbansi',
+    title='Kurva Kalibrasi Regresi Linear',
+    legend_title='Keterangan'
+)
+
+# Tampilkan grafik di Streamlit
+st.plotly_chart(fig, use_container_width=True)
+
 
 def precision(concs):
     if concs is None or len(concs) < 2:
