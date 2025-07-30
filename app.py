@@ -1,42 +1,34 @@
 import streamlit as st
 import numpy as np
 import pandas as pd
+import base64
 
-# --- Fungsi untuk Set Background Image ---
-def set_background_image():
+def add_bg_from_local(image_file):
+    with open(image_file, "rb") as f:
+        data = f.read()
+        encoded = base64.b64encode(data).decode()
     st.markdown(
-        """
-        <style>
-        .stApp {
-            background-image: url("https://cdn.pixabay.com/photo/2021/02/04/19/02/technology-5985446_960_720.jpg");
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
-            background-color: rgba(255, 255, 255, 0.85);
-            background-blend-mode: lighten;
-        }
-        /* Membuat konten utama aplikasi tetap terlihat jelas */
-        .css-18e3th9 {
-            background-color: rgba(255, 255, 255, 0.9) !important;
-            padding: 1rem;
-            border-radius: 10px;
-        }
-        </style>
-        """,
-        unsafe_allow_html=True,
+        f"""
+         <style>
+         .stApp {{
+             background-image: url("data:image/jpg;base64,{encoded}");
+             background-size: cover;
+             background-attachment: fixed;
+             background-position: center;
+         }}
+         </style>
+         """,
+        unsafe_allow_html=True
     )
 
-# Panggil fungsi untuk background sebelum set_page_config
-set_background_image()
+add_bg_from_local("download/bg.avif")
 
-# --- PAGE CONFIG ---
+# --- COVER & SIDEBAR MENU ---
 st.set_page_config(
     page_title="🧪 Website Kalkulator Analisis Presisi dan Akurasi",
     layout="wide"
 )
-
-# --- Judul & Deskripsi ---
+# COVER: Judul & Deskripsi
 with st.container():
     st.markdown(
         """
@@ -59,7 +51,7 @@ menu = st.sidebar.radio(
     index=0
 )
 
-# --- Utility Functions ---
+# --- UTILITIES ---
 def parse_numbers(text):
     text = text.strip()
     if not text:
@@ -136,7 +128,7 @@ def info_akurasi(val):
         e, s = "🔴", "Akurasi Perlu Diperbaiki"
     return e, s
 
-# --- Session state init for regression result ---
+# --- INISIALISASI SESSION STATE REGRESI ---
 if "slope" not in st.session_state:
     st.session_state.slope = None
 if "intercept" not in st.session_state:
@@ -146,9 +138,7 @@ if "r2" not in st.session_state:
 if "reg_ready" not in st.session_state:
     st.session_state.reg_ready = False
 
-# --------- MENU LOGIC ---------
-
-# Home Menu
+# --- MENU: HOME / COVER ---
 if menu == "🏠 Beranda":
     st.subheader("Aplikasi Kalkulator Laboratorium Digital")
     st.markdown("""
@@ -157,10 +147,12 @@ if menu == "🏠 Beranda":
     2. Lanjut ke **Hitung Konsentrasi & Presisi** untuk menghitung nilai konsentrasi sampel dan uji presisi.
     3. Gunakan menu **Evaluasi Akurasi** untuk menghitung akurasi metode (%Recovery) berdasarkan uji spike.
     """)
-    st.info("Tips: Lakukan input data standar dan klik tombol di setiap langkah. Seluruh fitur bekerja tanpa perlu refresh halaman!")
+    st.info(
+        "Tips: Lakukan input data standar dan klik tombol di setiap langkah. Seluruh fitur bekerja tanpa perlu refresh halaman!"
+    )
     st.success("Gunakan sidebar di kiri layar untuk memilih fitur utama.")
 
-# Regresi & Grafik
+# --- MENU: REGRESI & GRAFIK ---
 elif menu == "📈 Regresi & Grafik":
     st.header("Step 1: Input Data Standar (Regresi Linier)")
 
@@ -206,22 +198,19 @@ elif menu == "📈 Regresi & Grafik":
 
                 chart_df = pd.DataFrame({"Konsentrasi": x, "Absorbansi": y})
                 st.subheader("📈 Grafik Kurva Kalibrasi (standar)")
+                st.line_chart(chart_df.rename(columns={"Konsentrasi": "index"}).set_index("index"))
 
-                # Plot menggunakan Line Chart standar dengan regresi linear garis
-                # Garis regresi prediksi
-                pred_x = np.linspace(x.min(), x.max(), 100)
-                pred_y = slope * pred_x + intercept
-
-                # Gabungkan data asli dan prediksi
-                plot_df_orig = pd.DataFrame({"Absorbansi": y}, index=x)
-                plot_df_reg = pd.DataFrame({"Absorbansi (regresi)": pred_y}, index=pred_x)
-
-                st.line_chart(pd.concat([plot_df_orig, plot_df_reg], axis=1))
+                # Grafik prediksi regresi
+                pred_df = pd.DataFrame({"Konsentrasi": np.linspace(x.min(), x.max(), 100)})
+                pred_df["Absorbansi (regresi)"] = slope * pred_df["Konsentrasi"] + intercept
+                plot_df = pd.DataFrame({"Absorbansi": y}, index=x)
+                plot_df_pred = pd.DataFrame({"Absorbansi (regresi)": pred_df["Absorbansi (regresi)"]}, index=pred_df["Konsentrasi"])
+                st.line_chart(pd.concat([plot_df, plot_df_pred], axis=1))
     else:
         if st.session_state.get("reg_ready", False):
             st.info("Persamaan regresi sudah tersedia. Lanjutkan ke menu berikutnya untuk perhitungan sampel.")
 
-# Hitung Konsentrasi & Presisi
+# --- MENU: HITUNG KONSENTRASI & PRESISI ---
 elif menu == "🧮 Hitung Konsentrasi & Presisi":
     st.header("Step 2: Multi Sampel Absorbansi & Hitung Konsentrasi")
 
@@ -262,7 +251,7 @@ elif menu == "🧮 Hitung Konsentrasi & Presisi":
                 else:
                     st.info("Isi minimal 2 data konsentrasi untuk hitung presisi.")
 
-# Evaluasi Akurasi
+# --- MENU: EVALUASI AKURASI (%RECOVERY) ---
 elif menu == "✅ Evaluasi Akurasi":
     st.header("Step 3: Evaluasi Akurasi (%Recovery)")
 
@@ -293,15 +282,14 @@ elif menu == "✅ Evaluasi Akurasi":
             st.success(f"{emoji} %Recovery = {recovery:.2f}%")
             st.caption(f"Status Akurasi: {status}  \nFormula: ((C-spike terukur - C-awal) / C-ditambahkan) × 100%")
 
-# Footer
 st.markdown(
     """
-    ---
-    <div style='text-align:center;color:gray;font-size:13px;line-height:1.5;'>
-    Web App by Kelompok 10 Kelas 1A<br>
-    Analisis Kimia<br>
-    Politeknik AKA Bogor
-    </div>
-    """,
+---
+<div style='text-align:center;color:gray;font-size:13px;line-height:1.5;'>
+Web App by Kelompok 10 Kelas 1A
+Analisis Kimia
+Politeknik AKA Bogor
+</div>
+""",
     unsafe_allow_html=True,
 )
