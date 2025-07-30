@@ -31,8 +31,6 @@ st.markdown(
     /* Atur judul utama dan elemen sejenis supaya tanpa background */
     h1, .custom-title {
         background-color: transparent !important;
-        padding: 0 !important;
-        margin: 0 !important;
         color: white !important; /* Agar judul tetap kontras */
     }
 
