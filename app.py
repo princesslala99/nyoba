@@ -15,43 +15,6 @@ def add_bg_from_local(image_file):
              background-size: cover;
              background-attachment: fixed;
              background-position: center;
-             color: white !important;
-         }}
-
-         /* Semua blok teks diberi latar belakang hitam semi-transparan */
-         .block-container, .main, .stTextInput, .stTextArea, .stRadio, .stSelectbox, .stNumberInput,
-         .stButton, .stMarkdown, .stDataFrame, .stAlert {{
-             background-color: rgba(0, 0, 0, 0.85) !important;
-             color: white !important;
-             border-radius: 10px;
-             padding: 10px;
-         }}
-
-         /* Untuk judul dan paragraf HTML */
-         h1, h2, h3, p, div, span {{
-             background-color: rgba(0, 0, 0, 0.85);
-             color: white !important;
-             padding: 5px 10px;
-             border-radius: 5px;
-         }}
-
-         /* Sidebar styling */
-         section[data-testid="stSidebar"] > div:first-child {{
-             background-color: rgba(0, 0, 0, 0.9);
-             color: white;
-         }}
-
-         /* Tombol */
-         button[kind="primary"] {{
-             background-color: #333 !important;
-             color: white !important;
-             border: none !important;
-         }}
-
-         /* DataFrame background */
-         .stDataFrame th, .stDataFrame td {{
-             background-color: rgba(0, 0, 0, 0.85) !important;
-             color: white !important;
          }}
          </style>
          """,
