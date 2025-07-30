@@ -298,10 +298,12 @@ elif menu == "✅ Evaluasi Akurasi":
 st.markdown(
     """
 ---
-<div style='text-align:center;color:gray;font-size:13px;line-height:1.5;'>
-Web App by Kelompok 10 Kelas 1A
-Analisis Kimia
-Politeknik AKA Bogor
+<div style='text-align:left;color:gray;font-size:13px;line-height:1.5;'>
+ALIVIA AZZAHRA-2460317; 
+KARINA RAHMA YULITHA-2460398;
+NAILA NASYWA FADHILAH-2460454;
+REVANSHA M. ALAM F.-2460495;
+ZASKIA ADYA RACHMA-2460545
 </div>
 """,
     unsafe_allow_html=True,
